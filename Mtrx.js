@@ -1,104 +1,26 @@
-const ArrayProto = Array.prototype;
-const NativeIsArray = Array.isArray;
-const {abs, floor, random, max} = Math;
-
-
-function create(fn) {
-  return function(rows=1, cols=rows) {
-    var matrix = Array(rows);
-    for (let i = 0; i < rows; i++) {
-      matrix[i] = Array(cols);
-      for (let j = 0; j < cols; j++) {
-        matrix[i][j] = fn(i, j);
-      }
-    }
-    return matrix;
-  };
-}
-
-function isNumbers(array) {
-  if (!NativeIsArray(array) || array.length <= 0) return false;
-  for (let i of array) {
-    if (typeof i !== 'number') return false;
-  }
-  return true;
-}
-function isMtrxLike(obj) {
-  if (!NativeIsArray(obj) || obj.length <= 0) return false;
-
-  const length = obj[0].length;
-  if (length <= 0) return false;
-
-  for (let rows of obj) {
-    if (!isNumbers(rows) ||
-        rows.length !== length) {
-      return false;
-    }
-  }
-
-  return true;
-}
-function clean(matrix) {
-  const rows = matrix.rows;
-  for (let i = rows; i > 0; i--) {
-    matrix.pop();
-  }
-}
-function resetMtrx(matrix, matrixLike) {
-  const length = matrixLike.length;
-  for (let i = 0; i < length; i++) {
-    matrix.push(matrixLike[i]);
-  }
-}
-
-
-function addition(add=true) {
-  const operator = (a, b) => (add) ? (a + b) : (a - b);
-  return function(A, B) {
-    const rows = A.rows,
-          cols = A.cols;
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        A[i][j] = operator(A[i][j], B[i][j]);
-      }
-    }
-  };
-}
-function mulNumber(mul=true) {
-  const operator = (a, b) => (mul) ? (a * b) : (a / b);
-  return function(A, n) {
-    const rows = A.rows,
-          cols = A.cols;
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        A[i][j] = operator(A[i][j], n);
-      }
-    }
-  };
-}
-function multiply(matrix, another) {
-  const rows = matrix.rows,
-        cols = another.cols,
-        n = matrix.cols;
-
-  let newMatrix = create((i, j) => {
-    let sum = 0;
-    for (let k = 0; k < n; k++) {
-      sum += matrix[i][k] * another[k][j];
-    }
-    return sum;
-  })(rows, cols);
-
-  for (let i = 0; i < rows; i++) {
-    matrix[i] = newMatrix[i];
-  }
-}
+const {
+  create,
+  clone,
+  isNumbers,
+  isMtrxLike,
+  resetMtrx,
+  addition,
+  mulNumber,
+  multiply,
+  rowEchelon,
+} = require('./func');
+const {
+  abs,
+  floor,
+  random,
+  max
+} = Math;
 
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, nums='R') {
     let matrix;
     if (isMtrxLike(rows)) {
-      matrix = rows;
+      matrix = clone(rows);
     } else if (isNumbers(rows)){
       matrix = create((i, j) => (i === j) ? rows[i] : 0)(rows.length);
     } else if (typeof rows === 'number' && typeof cols === 'number') {
@@ -149,12 +71,19 @@ class Mtrx extends Array{
     return new Mtrx(this.cols, this.rows, (i, j) => this[j][i]);
   }
   // TODO
-  // get rank() {}
+  get rank() {
+    return rowEchelon(this).length;
+  }
   // get LUP() {}
   // get det() {}
   // get inv() {}
   // get compan() {}
-  // get rowEchelon() {}
+  get rowEchelon() {
+    const echelon = rowEchelon(this);
+    var newMatrix = new Mtrx(echelon);
+    newMatrix.changeRows(this.rows - echelon.length);
+    return newMatrix;
+  }
 
   static clone(matrix) {
     if (!this.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
@@ -170,8 +99,8 @@ class Mtrx extends Array{
   static isSameShape(obj, another) {
     return this.isMtrxLike(obj) &&
       this.isMtrxLike(another) &&
-      obj.rows === another.rows &&
-      obj.cols === another.cols;
+      obj.length === another.length &&
+      obj[0].length === another[0].length;
   }
 
   changeRows(rows=0, nums=0) {
@@ -208,10 +137,8 @@ class Mtrx extends Array{
   }
   resetLike(matrix) {
     if (isMtrxLike(matrix)) {
-      clean(this);
       resetMtrx(this, matrix);
     } else if (isNumbers(matrix)){
-      clean(this);
       resetMtrx(this, create((i, j) => (i === j) ? matrix[i] : 0)(matrix.length));
     }  else {
       throw TypeError(rows + ' is not a Matrix or Number Array.');
@@ -238,7 +165,7 @@ class Mtrx extends Array{
     if (typeof obj === 'number') {
       mulNumber(true)(this, obj);
     } else if (Mtrx.isMtrxLike(obj)) {
-      if (this.cols === obj.rows) {
+      if (this.cols === obj.length) {
         multiply(this, obj);
       } else {
         throw TypeError(this + ' can\'t right multiply ' + obj);
@@ -254,7 +181,7 @@ class Mtrx extends Array{
     if (typeof obj === 'number') {
       mulNumber(true)(this, obj);
     } else if (Mtrx.isMtrxLike(obj)) {
-      if (this.rows === obj.cols) {
+      if (this.rows === obj[0].length) {
         let newMatrix = Mtrx.clone(obj);
         multiply(obj, this);
         this.resetLike(newMatrix);
@@ -300,8 +227,30 @@ class Mtrx extends Array{
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
   }
+  static mul(obj, another) {
+    const isMtrxLike = this.isMtrxLike;
+    if (typeof obj === 'number' && isMtrxLike(another)) {
+      let matrix = new Mtrx(another);
+      mulNumber(true)(matrix, obj);
+      return matrix;
+    } else if (isMtrxLike(obj) && typeof another === 'number') {
+      let matrix = new Mtrx(obj);
+      mulNumber(true)(matrix, another);
+      return matrix;
+    } else if (isMtrxLike(obj) && isMtrxLike(another)) {
+      if (obj[0].length === another.length) {
+        let matrix = new Mtrx(obj);
+        multiply(matrix, another);
+        return matrix;
+      } else {
+        throw TypeError(obj + ' can\'t right multiply ' + another);
+      }
+    } else {
+      throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
+                      another + ' is not a Number or a MtrxLike.');
+    }
+  }
   // TODO
-  // static mul(matrix, obj) {}
   // static div(matrix, obj) {}
 
   toString() {
@@ -315,12 +264,11 @@ class Mtrx extends Array{
 }
 
 var n = new Mtrx([[2, 0, -1], [1, 3, 2]]);
-var m = Mtrx.like([[1, 7, -1], [4, 2, 3], [2, 0, 1]]);
+var a = [[1, 7, -1], [4, 2, 3], [2, 0, 1]];
+var m = Mtrx.like(a);
 console.log(m);
 console.log(n);
-//n.rightMul(m);
-//m.leftMul(n);
-//m.resetLike(n);
-console.log(m);
-console.log(n);
+var r = new Mtrx(3, 3, ()=> floor(random() * 10)/10);
+console.log(r.rowEchelon);
 
+module.exports = Mtrx;

@@ -1,11 +1,6 @@
 (function() {
-  var gcd = function(a, b) {
-    [a, b] = [abs(a), abs(b)];
-    while (b > 0) [a, b] = [b, a % b];
-    return a;
-  };
 
-  var lcm = (a, b) => a * b /  gcd(a, b);
+
 
   var isZeroRow = (row) => row.every((num) => num === 0);
   var hasZeroRow = (matrix) => matrix.some((row) => isZeroRow(row));
@@ -25,46 +20,6 @@
   Algm.divUp = (matrix, another) => (Algm.isDivable(matrix, another))
     ? Algm.mulUp(matrix, Algm.inv(another))
     : matrix;
-
-  var arrayGcd = (row) => row.reduce((g, val) =>  gcd(g, val), 0);
-  var reduceRow = function(row) {
-    if (isIntArray(row)) {
-      const gcd = arrayGcd(row);
-      row.forEach((n, i, r) => {if (n !== 0) r[i] /= gcd;});
-    }
-  };
-
-  var rowEchelon = function(matrix) {
-    var A = Algm.clone(matrix),
-        B = Array(),
-        col = Algm.cols(A);
-    for (let c = 0; c < col && Algm.rows(A) > 0; c++) {
-      A.sort((a, b) => {
-        if (a[c] === 0) return 1;
-        if (b[c] === 0) return -1;
-        return abs(a[c]) - abs(b[c]);
-      });
-
-      var topR = A[0],
-          topRC = topR[c];
-      if (topRC !== 0) {
-        for (let i = 1, row = Algm.rows(A); i < row; i++) {
-          var iRow = A[i],
-              iRowC = iRow[c],
-              l = lcm(topRC, iRowC);
-          if (iRowC !== 0) {
-            for (let j = c; j < col; j++) {
-              iRow[j] = (iRow[j] * l / iRowC) - (topR[j] * l / topRC);
-            }
-          }
-          reduceRow(iRow);
-        }
-        B.push(A.shift());
-      }
-    }
-
-    return B;
-  };
 
   Algm.rank = (matrix) => Algm.rows(rowEchelon(matrix));
   Algm.rowEchelon = function(matrix) {
@@ -136,8 +91,6 @@
 
     return [L, U, P];
   };
-
-  var precFloat = (n, f=12) => Number.parseFloat(n.toFixed(f));
 
   function LUPSolve(L, U, p, b) {
     const n = Algm.rows(L);
