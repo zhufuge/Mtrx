@@ -23,6 +23,9 @@ function clone(matrix) {
   }
   return newMatrix;
 }
+function transpose(matrix) {
+  return create((i, j) => matrix[j][i])(matrix[0].length, matrix.length);
+}
 
 function isNumbers(array) {
   if (!NativeIsArray(array) || array.length <= 0) return false;
@@ -102,6 +105,8 @@ function multiply(matrix, another) {
 }
 
 var precFloat = (n, f=15) => Number.parseFloat(n.toFixed(f));
+var precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b);
+
 var gcd = (a, b) => {
   if (isInteger(a) && isInteger(b)) {
     [a, b] = [abs(a), abs(b)];
@@ -113,7 +118,8 @@ var gcd = (a, b) => {
 };
 var lcm = (a, b) => precFloat(a * b /  gcd(a, b));
 var arrayGcd = (row) => row.reduce((g, val) =>  gcd(g, val), 0);
-var reduceRow = function(row) {
+
+function reduceRow(row) {
   if (isNumbers(row)) {
     const gcd = arrayGcd(row),
           length = row.length;
@@ -130,7 +136,6 @@ var reduceRow = function(row) {
     }
   }
 };
-var precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b);
 
 function rowEchelon(matrix) {
   let A = [...matrix],
@@ -164,14 +169,212 @@ function rowEchelon(matrix) {
   return B;
 };
 
+function range(start, stop, step=1) {
+  if (stop == null) {
+    stop = start || 0;
+    start = 0;
+  }
+  var length = max(Math.ceil((stop - start) / step), 0);
+  var range = Array(length);
+
+  for (let idx = 0; idx < length; idx++, start += step) {
+    range[idx] = start;
+  }
+
+  return range;
+};
+
+function permutationArray(matrix) {
+  let A = clone(matrix),
+      n = A.length,
+      order = range(n);
+  let swapOf = (i, j, array) => [array[i], array[j]] = [array[j], array[i]];
+  for (let k = 0; k < n; k++) {
+    var max = 0, maxIndex = 0;
+    for (let i = k; i < n; i++) {
+      var A_ik = abs(A[i][k]);
+      if (A_ik > max) {
+        max = A_ik;
+        maxIndex = i;
+      }
+    }
+
+    if (max === 0) throw Error('Singular matrix');
+
+    swapOf(k, maxIndex, order);
+    swapOf(k, maxIndex, A);
+
+    for (let i = k + 1; i < n; i++) {
+      A[i][k] = A[i][k] / A[k][k];
+      for (let j = k + 1; j < n; j++) {
+        A[i][j] = precSub(A[i][j], A[i][k] * A[k][j]);
+      }
+    }
+  }
+  return order;
+}
+function order2permutation(o) {
+  return create((i, j) => (j === o[i]) ? 1 : 0)(o.length);
+}
+function permutation2order(matrix) {
+  return matrix.map((r) => r.indexOf(1));
+}
+
+function LUP(matrix) {
+  const n = matrix.length,
+        P = order2permutation(permutationArray(matrix));
+
+  var A = clone(P),
+      U = create(() => 0)(n),
+      L = create((i, j) => (i === j) ? 1 : 0)(n);
+  multiply(A, matrix);
+  for (let k = 0; k < n; k++) {
+    U[k][k] = A[k][k];
+
+    for (let i = k + 1; i < n; i++) {
+      L[i][k] = A[i][k] / U[k][k];
+      U[k][i] = A[k][i];
+    }
+
+    for (let i = k + 1; i < n; i++) {
+      for (let j = k + 1; j < n; j++) {
+        A[i][j] = precSub(A[i][j], L[i][k] * U[k][j]);
+      }
+    }
+  }
+
+  return [L, U, P];
+}
+
+function LUPSolve(L, U, p, b) {
+  const n = L.length;
+  var x = Array(n).fill(0),
+      y = Array(n).fill(0);
+  for (let i = 0; i < n; i++) {
+    var ly = 0;
+    for (let j = 0; j < i; j++) {
+      ly += precFloat(L[i][j] * y[j]);
+    }
+    y[i] = precSub(b[p[i]], ly);
+  }
+
+  for (let i = n - 1; i >= 0; i--) {
+    var ux = 0;
+    for (let j = i + 1; j < n; j++) {
+      ux += precFloat(U[i][j] * x[j]);
+    }
+    x[i] = precFloat((y[i] - ux) / U[i][i]);
+  }
+  return x;
+}
+
+function inverse(matrix) {
+  const n = matrix.length;
+  var A = Array(n),
+      [L, U, P] = LUP(matrix),
+      p = permutation2order(P);
+  for (let i = 0; i < n; i++) {
+    var b = Array(n).fill(0);
+    b[i] = 1;
+    A[i] = LUPSolve(L, U, p, b);
+  }
+  return transpose(A);
+};
+
+
+function permutationDet(matrix) {
+  const n = matrix.length;
+  var det = 1;
+  for (let i = 0; i < n - 1; i++) {
+    for (var j = 0; matrix[j][i] !== 1; j++);
+    det *= (j % 2 === 0) ? 1 : -1;
+    matrix.splice(j, 1);
+  }
+  return det;
+}
+
+function diagDet(matrix) {
+  let det = 1;
+  for (let i = 0, len = matrix.length; i < len; i++) {
+    det *= matrix[i][i];
+  }
+  return det;
+}
+
+function isZeros(array) {
+  return array.every((n) => n === 0);
+}
+function hasZeroRow(matrix) {
+  return matrix.some((row) => isZeros(row));
+}
+
+function isSingular(matrix) {
+  return matrix.length !== matrix[0].length ||
+    hasZeroRow(matrix) ||
+    hasZeroRow(transpose(matrix)) ||
+    rowEchelon(matrix).length !== matrix.length;
+}
+
+function det(matrix) {
+  if (matrix.length !== matrix[0].length) return NaN;
+  if (isSingular(matrix)) return 0;
+
+  var [L, U, P] = LUP(matrix);
+  return precFloat(diagDet(L) * diagDet(U)) * permutationDet(P);
+};
+
+function cof(matrix, i, j) {
+  const RCfilter = (pass) => (val, index) => (index === pass) ? false : true;
+  return matrix.filter(RCfilter(i)).map((r) => r.filter(RCfilter(j)));
+}
+
+function compan(matrix) {
+  if (matrix.length !== matrix[0].length) {
+    throw TypeError(this + ' is not a Square matrix.');
+  }
+  if (!isSingular(matrix)) {
+    let A = inverse(matrix);
+    mulNumber(true)(A, det(matrix));
+    for (let i = 0, n = matrix.length; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        A[i][j] = precFloat(A[i][j]);
+      }
+    }
+    return A;
+  } else {
+    const n = matrix.length;
+    if (n > 1) {
+      return create((i, j) => det(cof(matrix, i, j)))(n);
+    } else {
+      return clone(matrix);
+    }
+  }
+}
+
+isDivable = (matrix, another) => {
+  return Algm.isMulable(matrix, another) &&
+    !Algm.isSingular(another);
+};
+divUp = (matrix, another) => (Algm.isDivable(matrix, another))
+  ? Algm.mulUp(matrix, Algm.inv(another))
+  : matrix;
+
+
 module.exports = {
   create,
   clone,
+  transpose,
   isNumbers,
   isMtrxLike,
+  isSingular,
   resetMtrx,
   addition,
   mulNumber,
   multiply,
   rowEchelon,
+  LUP,
+  inverse,
+  det,
+  cof,
+  compan,
 };

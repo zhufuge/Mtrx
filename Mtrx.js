@@ -1,6 +1,7 @@
 const {
   create,
   clone,
+  transpose,
   isNumbers,
   isMtrxLike,
   resetMtrx,
@@ -8,6 +9,11 @@ const {
   mulNumber,
   multiply,
   rowEchelon,
+  LUP,
+  inverse,
+  det,
+  cof,
+  compan,
 } = require('./func');
 const {
   abs,
@@ -68,16 +74,24 @@ class Mtrx extends Array{
     return this[0].length;
   }
   get T() {
-    return new Mtrx(this.cols, this.rows, (i, j) => this[j][i]);
+    return new Mtrx(transpose(this));
   }
-  // TODO
   get rank() {
     return rowEchelon(this).length;
   }
-  // get LUP() {}
-  // get det() {}
-  // get inv() {}
-  // get compan() {}
+  get LUP() {
+    let [L, U, P] = LUP(this);
+    return [new Mtrx(L), new Mtrx(U), new Mtrx(P)];
+  }
+  get inv() {
+    return new Mtrx(inverse(this));
+  }
+  get det() {
+    return det(this);
+  }
+  get compan() {
+    return new Mtrx(compan(this));
+  }
   get rowEchelon() {
     const echelon = rowEchelon(this);
     var newMatrix = new Mtrx(echelon);
@@ -252,6 +266,10 @@ class Mtrx extends Array{
   }
   // TODO
   // static div(matrix, obj) {}
+  static cof(matrix, i, j) {
+    if (!this.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
+    return new Mtrx(cof(matrix, i, j));
+  };
 
   toString() {
     let matrix = [...this];
@@ -265,10 +283,9 @@ class Mtrx extends Array{
 
 var n = new Mtrx([[2, 0, -1], [1, 3, 2]]);
 var a = [[1, 7, -1], [4, 2, 3], [2, 0, 1]];
-var m = Mtrx.like(a);
+var b = [[1, 2, 0], [3, 4, 4], [5, 6, 3]];
+var m = Mtrx.like([[1, -9], [1, 3]]);
 console.log(m);
-console.log(n);
-var r = new Mtrx(3, 3, ()=> floor(random() * 10)/10);
-console.log(r.rowEchelon);
+console.log(m.compan);
 
 module.exports = Mtrx;
