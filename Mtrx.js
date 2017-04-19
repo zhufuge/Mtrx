@@ -4,9 +4,9 @@ const {
   transpose,
   isNumbers,
   isMtrxLike,
+  isSingular,
   resetMtrx,
-  addition,
-  mulNumber,
+  mapMtrxItem,
   multiply,
   rowEchelon,
   LUP,
@@ -17,10 +17,13 @@ const {
 } = require('./func');
 const {
   abs,
-  floor,
   random,
-  max
 } = Math;
+
+const addition = (A, B) => mapMtrxItem((i, j, n) => n + B[i][j], A),
+      subtract = (A, B) =>  mapMtrxItem((i, j, n) => n - B[i][j], A),
+      mulNumber = (A, n) => mapMtrxItem((i, j, m) => m * n, A),
+      divNumber = (A, n) => mapMtrxItem((i, j, m) => m / n, A);
 
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, nums='R') {
@@ -80,8 +83,8 @@ class Mtrx extends Array{
     return rowEchelon(this).length;
   }
   get LUP() {
-    let [L, U, P] = LUP(this);
-    return [new Mtrx(L), new Mtrx(U), new Mtrx(P)];
+    let {L, U, P} = LUP(this);
+    return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
   }
   get inv() {
     return new Mtrx(inverse(this));
@@ -100,7 +103,7 @@ class Mtrx extends Array{
   }
 
   static clone(matrix) {
-    if (!this.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
+    if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     return new this(matrix);
   }
 
@@ -111,8 +114,8 @@ class Mtrx extends Array{
     return isMtrxLike(obj);
   }
   static isSameShape(obj, another) {
-    return this.isMtrxLike(obj) &&
-      this.isMtrxLike(another) &&
+    return isMtrxLike(obj) &&
+      isMtrxLike(another) &&
       obj.length === another.length &&
       obj[0].length === another[0].length;
   }
@@ -122,10 +125,7 @@ class Mtrx extends Array{
     if (rows > 0) {
       let r;
       for (let i = 0; i < rows; i++) {
-        r = Array(cols);
-        for (let j = 0; j < cols; j++) {
-          r[j] = nums;
-        }
+        r = Array(cols).fill(nums);
         this.push(r);
       }
     } else {
@@ -162,7 +162,7 @@ class Mtrx extends Array{
   add(matrix) {
     if (!Mtrx.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     if (Mtrx.isSameShape(this, matrix)) {
-      addition(true)(this, matrix);
+      resetMtrx(this, addition(this, matrix));
     } else {
       throw TypeError(matrix + ' \'s shape is no like ' + this);
     }
@@ -170,17 +170,17 @@ class Mtrx extends Array{
   sub(matrix) {
     if (!Mtrx.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     if (Mtrx.isSameShape(this, matrix)) {
-      addition(false)(this, matrix);
+      resetMtrx(this, subtract(this, matrix));
     } else {
       throw TypeError(matrix + ' \'s shape is no like ' + this);
     }
   }
   mul(obj) {
     if (typeof obj === 'number') {
-      mulNumber(true)(this, obj);
+      resetMtrx(this,  mulNumber(this, obj));
     } else if (Mtrx.isMtrxLike(obj)) {
       if (this.cols === obj.length) {
-        multiply(this, obj);
+        resetMtrx(this, multiply(this, obj));
       } else {
         throw TypeError(this + ' can\'t right multiply ' + obj);
       }
@@ -193,12 +193,10 @@ class Mtrx extends Array{
   }
   leftMul(obj) {
     if (typeof obj === 'number') {
-      mulNumber(true)(this, obj);
+      resetMtrx(this,  mulNumber(this, obj));
     } else if (Mtrx.isMtrxLike(obj)) {
       if (this.rows === obj[0].length) {
-        let newMatrix = Mtrx.clone(obj);
-        multiply(obj, this);
-        this.resetLike(newMatrix);
+        resetMtrx(this, multiply(obj, this));
       } else {
         throw TypeError(this + ' can\'t multiply ' + obj);
       }
@@ -206,56 +204,63 @@ class Mtrx extends Array{
       throw TypeError(obj + ' is not a Number or a MtrxLike');
     }
   }
-  // TODO: div a matrix
   div(obj) {
     if (typeof obj === 'number') {
-      mulNumber(false)(this, obj);
+      resetMtrx(this,  divNumber(this, obj));
     } else if (Mtrx.isMtrxLike(obj)) {
+      if (this.rows === obj[0].length && !isSingular(obj)) {
+        resetMtrx(this, multiply(this, inverse(obj)));
+      } else {
+        throw TypeError(this + ' can\'t divide ' + obj);
+      }
     } else {
       throw TypeError(obj + ' is not a Number or a MtrxLike');
     }
   }
-  // TODO
-  // rightDiv(obj) {}
-  // leftDiv(obj) {}
+  rightDiv(obj) {
+    this.div(obj);
+  }
+  leftDiv(obj) {
+    if (typeof obj === 'number') {
+      resetMtrx(this,  divNumber(this, obj));
+    } else if (Mtrx.isMtrxLike(obj)) {
+      if (this.rows === obj[0].length && !isSingular(obj)) {
+        resetMtrx(this, multiply(inverse(obj), this));
+      } else {
+        throw TypeError(this + ' can\'t divide ' + obj);
+      }
+    } else {
+      throw TypeError(obj + ' is not a Number or a MtrxLike');
+    }
+  }
 
   static add(matrix, another) {
-    if (!this.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
-    if (!this.isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
+    if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
+    if (!isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
     if (this.isSameShape(matrix, another)) {
-      let newMatrix = this.clone(matrix);
-      addition(true)(matrix, another);
-      return matrix;
+      return new Mtrx(addition(matrix, another));
     } else {
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
   }
   static sub(matrix, another) {
-    if (!this.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
-    if (!this.isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
+    if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
+    if (!isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
     if (this.isSameShape(matrix, another)) {
-      let newMatrix = this.clone(matrix);
-      addition(false)(matrix, another);
-      return matrix;
+      return new Mtrx(subtract(matrix, another));
     } else {
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
   }
   static mul(obj, another) {
-    const isMtrxLike = this.isMtrxLike;
+    var matrix;
     if (typeof obj === 'number' && isMtrxLike(another)) {
-      let matrix = new Mtrx(another);
-      mulNumber(true)(matrix, obj);
-      return matrix;
+      matrix =  mulNumber(another, obj);
     } else if (isMtrxLike(obj) && typeof another === 'number') {
-      let matrix = new Mtrx(obj);
-      mulNumber(true)(matrix, another);
-      return matrix;
+      matrix = mulNumber(obj, another);
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {
       if (obj[0].length === another.length) {
-        let matrix = new Mtrx(obj);
-        multiply(matrix, another);
-        return matrix;
+        matrix =  multiply(obj, another);
       } else {
         throw TypeError(obj + ' can\'t right multiply ' + another);
       }
@@ -263,11 +268,29 @@ class Mtrx extends Array{
       throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
                       another + ' is not a Number or a MtrxLike.');
     }
+    return new Mtrx(matrix);
   }
-  // TODO
-  // static div(matrix, obj) {}
+  static div(obj, another) {
+    var matrix;
+    if (typeof obj === 'number' && isMtrxLike(another)) {
+      matrix = divNumber(another, obj);
+    } else if (isMtrxLike(obj) && typeof another === 'number') {
+      matrix = divNumber(obj, another);
+    } else if (isMtrxLike(obj) && isMtrxLike(another)) {
+      if (obj[0].length === another.length && !isSingular(another)) {
+        matrix = multiply(matrix, inverse(another));
+      } else {
+        throw TypeError(obj + ' can\'t right divide ' + another);
+      }
+    } else {
+      throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
+                      another + ' is not a Number or a MtrxLike.');
+    }
+    return new Mtrx(matrix);
+  }
+
   static cof(matrix, i, j) {
-    if (!this.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
+    if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     return new Mtrx(cof(matrix, i, j));
   };
 
@@ -280,12 +303,5 @@ class Mtrx extends Array{
     return '[\n' + matrix.join('') + ']';
   }
 }
-
-var n = new Mtrx([[2, 0, -1], [1, 3, 2]]);
-var a = [[1, 7, -1], [4, 2, 3], [2, 0, 1]];
-var b = [[1, 2, 0], [3, 4, 4], [5, 6, 3]];
-var m = Mtrx.like([[1, -9], [1, 3]]);
-console.log(m);
-console.log(m.compan);
 
 module.exports = Mtrx;
