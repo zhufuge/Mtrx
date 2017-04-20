@@ -50,7 +50,7 @@ function resetMtrx(matrix, matrixLike) {
   }
 }
 
-function mapMtrxItem(fn, matrix) {
+function mapMtrx(fn, matrix) {
   return matrix.map((r, rIndex) =>
                     r.map((c, cIndex) =>
                           fn(rIndex, cIndex, c)));
@@ -63,7 +63,7 @@ function multiply(matrix, another) {
   return createMultiply(matrix.length, another[0].length);
 }
 
-const precFloat = (n, f=15) => Number.parseFloat(n.toFixed(f));
+const precFloat = (n, f=20) => Number.parseFloat(n.toFixed(f));
 const precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b);
 
 const gcd = (a, b) => {
@@ -273,7 +273,8 @@ function cof(matrix, i, j) {
 function compan(matrix) {
   if (!isSquare(matrix)) throw TypeError(this + ' is not a Square matrix.');
   if (!isSingular(matrix)) {
-    return mapMtrxItem((i, j, m) => precFloat(m * n), inverse(matrix));
+    const d = det(matrix);
+    return mapMtrx((i, j, m) => precFloat(m * d), inverse(matrix));
   } else {
     const n = matrix.length;
     return (n > 1)
@@ -290,7 +291,7 @@ module.exports = {
   isMtrxLike,
   isSingular,
   resetMtrx,
-  mapMtrxItem,
+  mapMtrx,
   multiply,
   rowEchelon,
   LUP,

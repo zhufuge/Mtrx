@@ -1,10 +1,13 @@
 {
-  "name": "Mtrx",
-  "version": "0.1.0",
+  "name": "mtrx",
+  "version": "0.0.1",
   "description": "A simple Array-like matrix calculation library.",
+  "keywords": ["matrix", "linear algebra"],
   "main": "index.js",
+  "homepage": "https://github.com/zhufuge/Mtrx.js",
+  "bugs": "https://github.com/zhufuge/Mtrx.js/issues",
   "repository": {
-    "url": "git@github.com:zhufuge/Mtrx.js.git",
+    "url": "https://github.com/zhufuge/Mtrx.js",
     "type": "git"
   },
   "author": "zhufuge",

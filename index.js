@@ -6,7 +6,7 @@ const {
   isMtrxLike,
   isSingular,
   resetMtrx,
-  mapMtrxItem,
+  mapMtrx,
   multiply,
   rowEchelon,
   LUP,
@@ -15,40 +15,48 @@ const {
   cof,
   compan,
 } = require('./func');
-const {
-  abs,
-  random,
-} = Math;
 
-const addition = (A, B) => mapMtrxItem((i, j, n) => n + B[i][j], A),
-      subtract = (A, B) =>  mapMtrxItem((i, j, n) => n - B[i][j], A),
-      mulNumber = (A, n) => mapMtrxItem((i, j, m) => m * n, A),
-      divNumber = (A, n) => mapMtrxItem((i, j, m) => m / n, A);
+const
+addition = (A, B) => mapMtrx((i, j, n) => n + B[i][j], A),
+subtract = (A, B) =>  mapMtrx((i, j, n) => n - B[i][j], A),
+mulNumber = (A, n) => mapMtrx((i, j, m) => m * n, A),
+divNumber = (A, n) => mapMtrx((i, j, m) => m / n, A);
+
+const
+createDiag = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length),
+createByNum = (r, c, n) => create(() => n)(r, c),
+createByFn = (r, c, fn) => create(fn)(r, c),
+createRand = create(() => Math.random()),
+createEye = create((i, j) => (i === j) ? 1 : 0);
 
 class Mtrx extends Array{
-  constructor(rows=1, cols=rows, nums='R') {
+  constructor(...description) {
+    const rows = description[0] || 1,
+          cols = description[1] || rows,
+          type = description[2] || 'R';
     let matrix;
+    let fn;
     if (isMtrxLike(rows)) {
-      matrix = clone(rows);
+      fn = clone;
     } else if (isNumbers(rows)){
-      matrix = create((i, j) => (i === j) ? rows[i] : 0)(rows.length);
+      fn = createDiag;
     } else if (typeof rows === 'number' && typeof cols === 'number') {
-      if (nums === 'R') {
-        matrix = create(() => random())(rows, cols);
-      } else if (nums === 'E') {
-        matrix = create((i, j) => (i === j) ? 1 : 0)(rows, cols);
-      } else if (typeof nums === 'number') {
-        matrix = create(() => nums)(rows, cols);
-      } else if (typeof nums === 'function'){
-        matrix = create(nums)(rows, cols);
+      if (type === 'R') {
+        fn = createRand;
+      } else if (type === 'E') {
+        fn = createEye;
+      } else if (typeof type === 'number') {
+        fn = createByNum;
+      } else if (typeof type === 'function'){
+        fn = createByFn;
       } else {
-        matrix = create(() => 0)(rows, cols);
+        fn = (r, c) => createByNum(r, c, 0);
       }
     } else {
       throw TypeError(rows + ' is not a Matrix or Number Array or Number.');
     }
 
-    super(...matrix);
+    super(...fn(rows, cols, type));
   }
 
   static zeros(rows=1, cols=rows) {
@@ -129,7 +137,7 @@ class Mtrx extends Array{
         this.push(r);
       }
     } else {
-      for (let i = 0; i < abs(rows); i++) {
+      for (let i = rows; i < 0; i++) {
         this.pop();
       }
     }
@@ -142,7 +150,7 @@ class Mtrx extends Array{
         }
       }
     } else {
-      for (let i = 0; i < abs(cols); i++) {
+      for (let i = cols; i < 0; i++) {
         for (let row of this) {
           row.pop();
         }
