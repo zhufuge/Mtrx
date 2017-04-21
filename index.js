@@ -5,6 +5,7 @@ const {
   isNumbers,
   isMtrxLike,
   isSingular,
+  isDiag,
   resetMtrx,
   mapMtrx,
   multiply,
@@ -24,17 +25,14 @@ divNumber = (A, n) => mapMtrx((i, j, m) => m / n, A);
 
 const
 createDiag = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length),
-createByNum = (r, c, n) => create(() => n)(r, c),
-createByFn = (r, c, fn) => create(fn)(r, c),
+createByNum = (r, c=r, n=0) => create(() => n)(r, c),
+createZeros = (r, c=r) => createByNum(r, c, 0),
+createByFn = (r, c=r, fn) => create(fn)(r, c),
 createRand = create(() => Math.random()),
 createEye = create((i, j) => (i === j) ? 1 : 0);
 
 class Mtrx extends Array{
-  constructor(...description) {
-    const rows = description[0] || 1,
-          cols = description[1] || rows,
-          type = description[2] || 'R';
-    let matrix;
+  constructor(rows=1, cols=rows, type='R') {
     let fn;
     if (isMtrxLike(rows)) {
       fn = clone;
@@ -50,7 +48,7 @@ class Mtrx extends Array{
       } else if (typeof type === 'function'){
         fn = createByFn;
       } else {
-        fn = (r, c) => createByNum(r, c, 0);
+        fn = createZeros;
       }
     } else {
       throw TypeError(rows + ' is not a Matrix or Number Array or Number.');
@@ -60,21 +58,31 @@ class Mtrx extends Array{
   }
 
   static zeros(rows=1, cols=rows) {
+    if (!isNumbers([rows, cols]))
+      throw TypeError(`${rows} or ${cols} isn't a number`);
     return new this(rows, cols, 0);
   }
   static ones(rows=1, cols=rows) {
+    if (!isNumbers([rows, cols]))
+      throw TypeError(`${rows} or ${cols} isn't a number`);
     return new this(rows, cols, 1);
   }
   static eye(rows=1, cols=rows) {
+    if (!isNumbers([rows, cols]))
+      throw TypeError(`${rows} or ${cols} isn't a number`);
     return new this(rows, cols, 'E');
   }
   static rand(rows=1, cols=rows) {
+    if (!isNumbers([rows, cols]))
+      throw TypeError(`${rows} or ${cols} isn't a number`);
     return new this(rows, cols);
   }
-  static like(secondOrder) {
-    return new this(secondOrder);
+  static like(matrix) {
+    if (!isMtrxLike(matrix)) throw TypeError(`${matrix} isn't a matrix-like`);
+    return new this(matrix);
   }
   static diag(array) {
+    if (!isNumbers(array)) throw TypeError(`${array} isn't a number array`);
     return new this(array);
   };
 
@@ -120,6 +128,9 @@ class Mtrx extends Array{
   }
   static isMtrxLike(obj) {
     return isMtrxLike(obj);
+  }
+  static isDiag(obj) {
+    return isDiag(obj);
   }
   static isSameShape(obj, another) {
     return isMtrxLike(obj) &&

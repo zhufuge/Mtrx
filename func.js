@@ -64,7 +64,7 @@ function multiply(matrix, another) {
 }
 
 const precFloat = (n, f=20) => Number.parseFloat(n.toFixed(f));
-const precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b);
+const precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b, 15);
 
 const gcd = (a, b) => {
   if (isInteger(a) && isInteger(b)) {
@@ -219,14 +219,14 @@ function LUPSolve(L, U, p, b) {
     for (let j = i + 1; j < n; j++) {
       ux += precFloat(U[i][j] * x[j]);
     }
-    x[i] = precFloat((y[i] - ux) / U[i][i]);
+    x[i] = precFloat((y[i] - ux) / U[i][i], 15);
   }
   return x;
 }
 
 function inverse(matrix) {
   const n = matrix.length;
-  var A = Array(n),
+  let A = Array(n),
       {L, U, P} = LUP(matrix),
       p = permutation2order(P);
   for (let i = 0; i < n; i++) {
@@ -251,18 +251,22 @@ function permutationDet(matrix) {
 const isZeros = (array) => array.every((n) => n === 0);
 const hasZeroRow = (matrix) =>  matrix.some((row) => isZeros(row));
 const isSquare = (matrix) => matrix.length === matrix[0].length;
-const isSingular = (matrix) =>
-      !isSquare(matrix) ||
+const isSingular = (matrix) => !isSquare(matrix) ||
       hasZeroRow(matrix) ||
       hasZeroRow(transpose(matrix)) ||
       rowEchelon(matrix).length !== matrix.length;
+const isDiag = (matrix) =>
+      isMtrxLike(matrix) &&
+      isSquare(matrix) &&
+      matrix.every((r, i) => r.every((c, j)=> (i === j) ? true : (c === 0)));
 
 const diagDet = (diag) =>  diag.reduce((det, r, i) => det * r[i], 1);
 function det(matrix) {
   if (!isSquare(matrix)) return NaN;
   if (isSingular(matrix)) return 0;
+  if (isDiag(matrix)) return precFloat(diagDet(matrix), 14);
   const {L, U, P} = LUP(matrix);
-  return precFloat(diagDet(L) * diagDet(U)) * permutationDet(P);
+  return precFloat(diagDet(L) * diagDet(U), 14) * permutationDet(P);
 };
 
 function cof(matrix, i, j) {
@@ -290,6 +294,7 @@ module.exports = {
   isNumbers,
   isMtrxLike,
   isSingular,
+  isDiag,
   resetMtrx,
   mapMtrx,
   multiply,
