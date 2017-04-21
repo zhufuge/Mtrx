@@ -1,0 +1,87 @@
+#+TITLE: Mtrx
+#+AUTHOR: zhufuge
+#+DATE: <2017-04-21 周五 13:25>
+
+* discription
+  It is a calculation library for matrix.
+
+  The library has only an Object -- Mtrx.
+
+  Mtrx is extends Array, is arrays of Numbers.
+
+* create
+  #+BEGIN_SRC js
+    // no arguments, create a 1×1 random(0 ~ 1) matrix
+    new Mtrx()
+    // -> Mtrx [ [ 0.7173410249746024 ] ]
+
+    // get a number, create a n×n random(0 ~ 1) matrix
+    new Mtrx(2)
+    // -> Mtrx [
+    //  [ 0.9028933497295337, 0.18980748816858917 ],
+    //  [ 0.10859200880292263, 0.560035422729191 ] ]
+
+    // get two numbers, create a n×m random(0 ~ 1) matrix
+    new Mtrx(2, 3)
+    // -> Mtrx [
+    //  [ 0.6974184450003136, 0.6402339494410889, 0.4553998131618524 ],
+    //  [ 0.38759912033793165, 0.8904429716538196, 0.7449091649551736 ] ]
+
+    // get three numbers, create a n×m x matrix
+    new Mtrx(3, 4, 9)
+    // -> Mtrx [ [ 9, 9, 9, 9 ], [ 9, 9, 9, 9 ], [ 9, 9, 9, 9 ] ]
+
+    // get numbers array, create a diag matrix
+    new Mtrx([2, 4, 6])
+    // -> Mtrx [ [ 2, 0, 0 ], [ 0, 4, 0 ], [ 0, 0, 6 ] ]
+
+    // get a 2-order numbers array, create a matrix like the array
+    new Mtrx([[1, 2, 3], [4, 5, 6]])
+    // -> Mtrx [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
+
+    // get two numbers and a function expression, create a matrix by the expression
+    new Mtrx(2, 3, (i, j) => i + j)
+    // -> Mtrx [ [ 0, 1, 2 ], [ 1, 2, 3 ] ]
+  #+END_SRC
+
+* property
+   - rows
+   - cols
+   - T
+   - rank
+   - LUP
+   - inv
+   - det
+   - compan
+   - rowEchelon
+
+* static function
+   - zeros
+   - ones
+   - eye
+   - rand
+   - like
+   - diag
+   - clone
+   - isMtrx
+   - isMtrxLike
+   - isDiag
+   - isSameShape
+   - add
+   - sub
+   - mul
+   - div
+
+* function
+   - changeRows
+   - changeCols
+   - resetLike
+   - add
+   - sub
+   - mul
+   - rightMul
+   - leftMul
+   - div
+   - rightDiv
+   - leftDiv
+   - cof

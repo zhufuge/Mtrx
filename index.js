@@ -32,17 +32,15 @@ createRand = create(() => Math.random()),
 createEye = create((i, j) => (i === j) ? 1 : 0);
 
 class Mtrx extends Array{
-  constructor(rows=1, cols=rows, type='R') {
+  constructor(rows=1, cols=rows, type) {
     let fn;
     if (isMtrxLike(rows)) {
       fn = clone;
     } else if (isNumbers(rows)){
       fn = createDiag;
     } else if (typeof rows === 'number' && typeof cols === 'number') {
-      if (type === 'R') {
+      if (type === void 0) {
         fn = createRand;
-      } else if (type === 'E') {
-        fn = createEye;
       } else if (typeof type === 'number') {
         fn = createByNum;
       } else if (typeof type === 'function'){
@@ -70,7 +68,7 @@ class Mtrx extends Array{
   static eye(rows=1, cols=rows) {
     if (!isNumbers([rows, cols]))
       throw TypeError(`${rows} or ${cols} isn't a number`);
-    return new this(rows, cols, 'E');
+    return new this(createEye(rows, cols));
   }
   static rand(rows=1, cols=rows) {
     if (!isNumbers([rows, cols]))

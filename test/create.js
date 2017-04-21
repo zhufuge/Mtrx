@@ -23,7 +23,6 @@ const d = new Mtrx([
   [0, 1, 0],
   [0, 0, 1]
 ]);
-assert.deepStrictEqual(new Mtrx(3, 3, 'E'), d, 'new Mtrx eye is fault');
 assert.deepStrictEqual(Mtrx.eye(3, 3), d, 'Mtrx.eye is fault');
 
 // by Number, ones, zeros
