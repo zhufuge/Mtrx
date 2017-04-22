@@ -1,15 +1,17 @@
-#+TITLE: Mtrx
 #+AUTHOR: zhufuge
 #+DATE: <2017-04-21 周五 13:25>
 
-* discription
-  It is a calculation library for matrix.
+* Mtrx
+** discription
+  Mtrx is a calculation library for matrix.
 
   The library has only an Object -- Mtrx.
 
   Mtrx is extends Array, is arrays of Numbers.
 
-* create
+** create
+  It is really easy to create a matrix object what you want.
+
   #+BEGIN_SRC js
     // no arguments, create a 1×1 random(0 ~ 1) matrix
     new Mtrx()
@@ -44,18 +46,42 @@
     // -> Mtrx [ [ 0, 1, 2 ], [ 1, 2, 3 ] ]
   #+END_SRC
 
-* property
-   - rows
-   - cols
-   - T
-   - rank
+** operation
+   Mtrx object is a Array-like object. So, you can operat it just like to operat a 2-order Array.
+
+   #+BEGIN_SRC js
+     const m = new Mtrx(2, 3, 0);
+     // -> Mtrx [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+
+     m[0][1] = 1;
+     // -> Mtrx [ [ 0, 1, 0 ], [ 0, 0, 0 ] ]
+   #+END_SRC
+
+** property
+
+   #+BEGIN_SRC js
+     const m = new Mtrx(2, 3, (i, j) => (i === j) ? 1 : 0);
+     // -> Mtrx [ [ 1, 0, 0 ], [ 0, 1, 0 ] ]
+
+     m.rows  // -> 2
+
+     m.cols  // -> 3
+
+     m.T
+     // calculate transpose matrix, return a new Mtrx object
+     // -> Mtrx [ [ 1, 0 ], [ 0, 1 ], [ 0, 0 ] ]
+
+     m.rank  // -> 2
+     m[0][0] = 0;
+     // -> Mtrx [ [ 0, 0, 0 ], [ 0, 1, 0 ] ]
+     m.rank  // -> 1
+   #+END_SRC
    - LUP
    - inv
    - det
    - compan
    - rowEchelon
-
-* static function
+** static function
    - zeros
    - ones
    - eye
@@ -72,7 +98,7 @@
    - mul
    - div
 
-* function
+** function
    - changeRows
    - changeCols
    - resetLike
