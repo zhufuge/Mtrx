@@ -6,7 +6,6 @@ const m = new Mtrx([
   [3, 4, 4],
   [5, 6, 3]
 ]);
-
 const diag = new Mtrx([
   [6,   0, 0, 0],
   [0, 0.6, 0, 0],

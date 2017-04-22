@@ -160,7 +160,7 @@ function permutationArray(matrix) {
       }
     }
 
-    if (max === 0) throw Error('Singular matrix');
+    if (max === 0) throw Error(matrix + 'is a Singular matrix');
 
     swapOf(k, maxIndex, order);
     swapOf(k, maxIndex, A);
@@ -178,6 +178,7 @@ const order2permutation = (o) => create((i, j) => (j === o[i]) ? 1 : 0)(o.length
 const permutation2order = (matrix) => matrix.map((r) => r.indexOf(1));
 
 function LUP(matrix) {
+  if (!isSquare(matrix)) throw Error(matrix + ' is not a Square matrix');
   const n = matrix.length,
         P = order2permutation(permutationArray(matrix));
 
@@ -225,6 +226,7 @@ function LUPSolve(L, U, p, b) {
 }
 
 function inverse(matrix) {
+  if (!isSquare(matrix)) throw Error(matrix + ' is not a Square matrix');
   const n = matrix.length;
   let A = Array(n),
       {L, U, P} = LUP(matrix),
@@ -275,7 +277,7 @@ function cof(matrix, i, j) {
 }
 
 function compan(matrix) {
-  if (!isSquare(matrix)) throw TypeError(this + ' is not a Square matrix.');
+  if (!isSquare(matrix)) throw Error(matrix + ' is not a Square matrix.');
   if (!isSingular(matrix)) {
     const d = det(matrix);
     return mapMtrx((i, j, m) => precFloat(m * d), inverse(matrix));
