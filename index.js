@@ -31,6 +31,10 @@ createByFn = (r, c=r, fn) => create(fn)(r, c),
 createRand = create(() => Math.random()),
 createEye = create((i, j) => (i === j) ? 1 : 0);
 
+const NumbersError = (...number) => number.forEach((n) => {
+  if (typeof n !== 'number') TypeError(n + ' is not a number');
+});
+
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, type) {
     let fn;
@@ -56,23 +60,19 @@ class Mtrx extends Array{
   }
 
   static zeros(rows=1, cols=rows) {
-    if (!isNumbers([rows, cols]))
-      throw TypeError(`${rows} or ${cols} isn't a number`);
+    NumbersError(rows, cols);
     return new this(rows, cols, 0);
   }
   static ones(rows=1, cols=rows) {
-    if (!isNumbers([rows, cols]))
-      throw TypeError(`${rows} or ${cols} isn't a number`);
+    NumbersError(rows, cols);
     return new this(rows, cols, 1);
   }
   static eye(rows=1, cols=rows) {
-    if (!isNumbers([rows, cols]))
-      throw TypeError(`${rows} or ${cols} isn't a number`);
+    NumbersError(rows, cols);
     return new this(createEye(rows, cols));
   }
   static rand(rows=1, cols=rows) {
-    if (!isNumbers([rows, cols]))
-      throw TypeError(`${rows} or ${cols} isn't a number`);
+    NumbersError(rows, cols);
     return new this(rows, cols);
   }
   static like(matrix) {
@@ -83,6 +83,9 @@ class Mtrx extends Array{
     if (!isNumbers(array)) throw TypeError(`${array} isn't a number array`);
     return new this(array);
   };
+  static clone(matrix) {
+    return this.like(matrix);
+  }
 
   get rows() {
     return this.length;
@@ -114,11 +117,6 @@ class Mtrx extends Array{
     var newMatrix = new Mtrx(echelon);
     newMatrix.changeRows(this.rows - echelon.length);
     return newMatrix;
-  }
-
-  static clone(matrix) {
-    if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
-    return new this(matrix);
   }
 
   static isMtrx(obj) {

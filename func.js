@@ -56,15 +56,16 @@ function mapMtrx(fn, matrix) {
                           fn(rIndex, cIndex, c)));
 }
 
+const precFloat = (n, f=20) => Number.parseFloat(n.toFixed(f));
+const precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b, 15);
+
 function multiply(matrix, another) {
   const createMultiply = create((i, j) => {
-    return matrix.reduce((sum, r, k) => sum + matrix[i][k] * another[k][j], 0);
+    return matrix.reduce((sum, r, k) =>
+                         precFloat(sum + matrix[i][k] * another[k][j], 14), 0);
   });
   return createMultiply(matrix.length, another[0].length);
 }
-
-const precFloat = (n, f=20) => Number.parseFloat(n.toFixed(f));
-const precSub = (a, b) => (abs(a - b) < EPSILON) ? 0 : precFloat(a - b, 15);
 
 const gcd = (a, b) => {
   if (isInteger(a) && isInteger(b)) {
