@@ -176,29 +176,19 @@
      // -> Mtrx [ [ 0, 1, 2 ], [ 1, 2, 3 ] ]
 
 
-     Mtrx.isMtrx(n)
-     // -> false
-     Mtrx.isMtrx(m)
-     // -> true
+     Mtrx.isMtrx(n)     // -> false
+     Mtrx.isMtrx(m)     // -> true
 
-     Mtrx.isMtrxLike(n)
-     // -> true
-     Mtrx.isMtrxLike(m)
-     // -> true
-     Mtrx.isMtrxLike([[1, 2], [1]]);
-     // -> false
-     Mtrx.isMtrxLike([['1', 2], [1, 2]]);
-     // -> false
+     Mtrx.isMtrxLike(n)     // -> true
+     Mtrx.isMtrxLike(m)     // -> true
+     Mtrx.isMtrxLike([[1, 2], [1]]);     // -> false
+     Mtrx.isMtrxLike([['1', 2], [1, 2]]);     // -> false
 
-     Mtrx.isDiag(m)
-     // -> false
-     Mtrx.isDiag([[1, 0], [0, 4]]);
-     // -> true
+     Mtrx.isDiag(m)     // -> false
+     Mtrx.isDiag([[1, 0], [0, 4]]);     // -> true
 
-     Mtrx.isSameShape(m, n)
-     // -> true
-     Mtrx.isSameShape(m, new Mtrx([[1, 2], [3, 4]]))
-     // -> false
+     Mtrx.isSameShape(m, n)     // -> true
+     Mtrx.isSameShape(m, new Mtrx([[1, 2], [3, 4]]))     // -> false
    #+END_SRC
 
    Base calculation:

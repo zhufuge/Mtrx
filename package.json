@@ -4,6 +4,10 @@
   "description": "A simple Array-like matrix calculation library.",
   "keywords": ["matrix", "linear algebra"],
   "main": "index.js",
+  "files": [
+    "index.js",
+    "func.js"
+  ],
   "homepage": "https://github.com/zhufuge/Mtrx.js",
   "bugs": "https://github.com/zhufuge/Mtrx.js/issues",
   "repository": {
