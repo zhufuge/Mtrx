@@ -51,6 +51,11 @@ const assert = require('assert');
     [1, 2, 2]
   ]);
 
+  const x = new Mtrx([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
+  const y = new Mtrx([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+
+  console.log(x.cof(0, 0));
+
   const r = Mtrx.sub(m, p);
   assert.deepStrictEqual(m, n, 'new Mtrx is fault');
   assert.deepStrictEqual(r, q, 'Mtrx.sub is fault');
@@ -116,4 +121,4 @@ const assert = require('assert');
   assert.deepStrictEqual(m, l, 'Mtrx.mul matrix is fault, first has change');
 })();
 
-// div
+console.log('calculate.js NO PROBLEM');

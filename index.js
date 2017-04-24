@@ -84,6 +84,7 @@ class Mtrx extends Array{
     return new this(array);
   };
   static clone(matrix) {
+    if (!this.isMtrx(matrix)) throw TypeError(`${matrix} isn't a Mtrx object`);
     return this.like(matrix);
   }
 
@@ -135,6 +136,12 @@ class Mtrx extends Array{
       obj[0].length === another[0].length;
   }
 
+  of(i, j) {
+    return this[i][j];
+  }
+  cof(i, j) {
+    return new Mtrx(cof(this, i, j));
+  }
   changeRows(rows=0, nums=0) {
     const cols = this.cols;
     if (rows > 0) {
