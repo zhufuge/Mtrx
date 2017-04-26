@@ -54,4 +54,12 @@ const f = new Mtrx([
 assert.deepStrictEqual(new Mtrx(4, 3, (i, j) => (i === j) ? 0 : 1),
                        f, 'new Mtrx by function is fault');
 
+const g = new Mtrx([
+  [0, 2, 3],
+  [2, 2, 4],
+  [3, 4, 4],
+  [4, 5, 6]
+]);
+assert.deepStrictEqual(f.mapMtrx((i, j, a) => a + i + j), g, '.map is fault');
+
 console.log('create.js NO PROBLEM');

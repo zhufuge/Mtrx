@@ -181,117 +181,71 @@ class Mtrx extends Array{
     }
   }
 
+  mapMtrx(fn) {
+    return new Mtrx(mapMtrx(fn, this));
+  }
+
   add(matrix) {
-    if (!Mtrx.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
-    if (Mtrx.isSameShape(this, matrix)) {
-      resetMtrx(this, addition(this, matrix));
-    } else {
-      throw TypeError(matrix + ' \'s shape is no like ' + this);
-    }
+    return Mtrx.add(this, matrix);
   }
   sub(matrix) {
-    if (!Mtrx.isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
-    if (Mtrx.isSameShape(this, matrix)) {
-      resetMtrx(this, subtract(this, matrix));
-    } else {
-      throw TypeError(matrix + ' \'s shape is no like ' + this);
-    }
+    return Mtrx.sub(this, matrix);
   }
   mul(obj) {
-    if (typeof obj === 'number') {
-      resetMtrx(this,  mulNumber(this, obj));
-    } else if (Mtrx.isMtrxLike(obj)) {
-      if (this.cols === obj.length) {
-        resetMtrx(this, multiply(this, obj));
-      } else {
-        throw TypeError(this + ' can\'t right multiply ' + obj);
-      }
-    } else {
-      throw TypeError(obj + ' is not a Number or a MtrxLike');
-    }
+    return Mtrx.mul(this, obj);
   }
   rightMul(obj) {
-    this.mul(obj);
+    return Mtrx.mul(this, obj);
   }
   leftMul(obj) {
-    if (typeof obj === 'number') {
-      resetMtrx(this,  mulNumber(this, obj));
-    } else if (Mtrx.isMtrxLike(obj)) {
-      if (this.rows === obj[0].length) {
-        resetMtrx(this, multiply(obj, this));
-      } else {
-        throw TypeError(this + ' can\'t multiply ' + obj);
-      }
-    } else {
-      throw TypeError(obj + ' is not a Number or a MtrxLike');
-    }
+    return Mtrx.mul(obj, this);
   }
   div(obj) {
-    if (typeof obj === 'number') {
-      resetMtrx(this,  divNumber(this, obj));
-    } else if (Mtrx.isMtrxLike(obj)) {
-      if (this.rows === obj[0].length && !isSingular(obj)) {
-        resetMtrx(this, multiply(this, inverse(obj)));
-      } else {
-        throw TypeError(this + ' can\'t divide ' + obj);
-      }
-    } else {
-      throw TypeError(obj + ' is not a Number or a MtrxLike');
-    }
+    return Mtrx.div(this, obj);
   }
   rightDiv(obj) {
-    this.div(obj);
+    return Mtrx.div(this, obj);
   }
   leftDiv(obj) {
-    if (typeof obj === 'number') {
-      resetMtrx(this,  divNumber(this, obj));
-    } else if (Mtrx.isMtrxLike(obj)) {
-      if (this.rows === obj[0].length && !isSingular(obj)) {
-        resetMtrx(this, multiply(inverse(obj), this));
-      } else {
-        throw TypeError(this + ' can\'t divide ' + obj);
-      }
-    } else {
-      throw TypeError(obj + ' is not a Number or a MtrxLike');
-    }
+    return Mtrx.div(obj, this);
   }
 
   static add(matrix, another) {
     if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     if (!isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
-    if (this.isSameShape(matrix, another)) {
-      return new Mtrx(addition(matrix, another));
-    } else {
+    if (!this.isSameShape(matrix, another)) {
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
+    return new Mtrx(addition(matrix, another));
   }
+
   static sub(matrix, another) {
     if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     if (!isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
-    if (this.isSameShape(matrix, another)) {
-      return new Mtrx(subtract(matrix, another));
-    } else {
+    if (!this.isSameShape(matrix, another)) {
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
+    return new Mtrx(subtract(matrix, another));
   }
+
   static mul(obj, another) {
-    var matrix;
+    let matrix;
     if (typeof obj === 'number' && isMtrxLike(another)) {
       matrix =  mulNumber(another, obj);
     } else if (isMtrxLike(obj) && typeof another === 'number') {
       matrix = mulNumber(obj, another);
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {
-      if (obj[0].length === another.length) {
-        matrix =  multiply(obj, another);
-      } else {
+      if (obj[0].length !== another.length) {
         throw TypeError(obj + ' can\'t right multiply ' + another);
       }
+      matrix =  multiply(obj, another);
     } else {
       throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
                       another + ' is not a Number or a MtrxLike.');
     }
     return new Mtrx(matrix);
   }
+
   static div(obj, another) {
     var matrix;
     if (typeof obj === 'number' && isMtrxLike(another)) {
@@ -299,11 +253,10 @@ class Mtrx extends Array{
     } else if (isMtrxLike(obj) && typeof another === 'number') {
       matrix = divNumber(obj, another);
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {
-      if (obj[0].length === another.length && !isSingular(another)) {
-        matrix = multiply(matrix, inverse(another));
-      } else {
+      if (obj[0].length !== another.length || isSingular(another)) {
         throw TypeError(obj + ' can\'t right divide ' + another);
       }
+      matrix = multiply(matrix, inverse(another));
     } else {
       throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
                       another + ' is not a Number or a MtrxLike.');

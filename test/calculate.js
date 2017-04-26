@@ -25,10 +25,6 @@ const assert = require('assert');
   assert.deepStrictEqual(m, n, 'new Mtrx is fault');
   assert.deepStrictEqual(r, q, 'Mtrx.add is fault');
   assert.deepStrictEqual(m, n, 'Mtrx.add is fault, first has change');
-
-  n.add(p);
-  assert.deepStrictEqual(n, q, '.add is fault');
-  assert.notDeepStrictEqual(n, m, '.add is not effect');
 })();
 
 // sub
@@ -55,10 +51,6 @@ const assert = require('assert');
   assert.deepStrictEqual(m, n, 'new Mtrx is fault');
   assert.deepStrictEqual(r, q, 'Mtrx.sub is fault');
   assert.deepStrictEqual(m, n, 'Mtrx.sub is fault, first has change');
-
-  n.sub(p);
-  assert.deepStrictEqual(n, q, '.sub is fault');
-  assert.notDeepStrictEqual(n, m, '.sub is not effect');
 })();
 
 // mul
@@ -84,10 +76,6 @@ const assert = require('assert');
   assert.deepStrictEqual(m, n, 'new Mtrx is fault');
   assert.deepStrictEqual(r, q, 'Mtrx.mul number is fault');
   assert.deepStrictEqual(m, n, 'Mtrx.mul number is fault, first has change');
-
-  n.mul(number);
-  assert.deepStrictEqual(n, q, '.mul number is fault');
-  assert.notDeepStrictEqual(n, m, '.mul number is not effect');
 
   // matrix
   const l = new Mtrx(a);
