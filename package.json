@@ -1,6 +1,6 @@
 {
   "name": "mtrx",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A simple Array-like matrix calculation library.",
   "keywords": ["matrix", "linear algebra"],
   "main": "index.js",
