@@ -8,6 +8,7 @@ const {
   isDiag,
   resetMtrx,
   mapMtrx,
+  reduceMtrx,
   multiply,
   rowEchelon,
   LUP,
@@ -16,12 +17,6 @@ const {
   cof,
   compan,
 } = require('./func');
-
-const
-addition = (A, B) => mapMtrx((i, j, n) => n + B[i][j], A),
-subtract = (A, B) =>  mapMtrx((i, j, n) => n - B[i][j], A),
-mulNumber = (A, n) => mapMtrx((i, j, m) => m * n, A),
-divNumber = (A, n) => mapMtrx((i, j, m) => m / n, A);
 
 const
 createDiag = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length),
@@ -182,7 +177,21 @@ class Mtrx extends Array{
   }
 
   mapMtrx(fn) {
-    return new Mtrx(mapMtrx(fn, this));
+    return new Mtrx(mapMtrx(this, fn));
+  }
+
+  reduceMtrx(fn, init) {
+    return reduceMtrx(this, fn, init);
+  }
+
+  sum() {
+    return reduceMtrx(this, (sum, n, i, j) => sum + n, 0);
+  }
+  min() {
+    return reduceMtrx(this, (min, n, i, j) => (min > n) ? n : min);
+  }
+  max() {
+    return reduceMtrx(this, (max, n, i, j) => (max < n) ? n : max);
   }
 
   add(matrix) {
@@ -216,6 +225,7 @@ class Mtrx extends Array{
     if (!this.isSameShape(matrix, another)) {
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
+    const addition = (A, B) => mapMtrx(A, (n, i, j) => n + B[i][j]);
     return new Mtrx(addition(matrix, another));
   }
 
@@ -225,11 +235,13 @@ class Mtrx extends Array{
     if (!this.isSameShape(matrix, another)) {
       throw TypeError(matrix + ' \'s shape is no like ' + another);
     }
+    const subtract = (A, B) => mapMtrx(A, (n, i, j) => n - B[i][j]);
     return new Mtrx(subtract(matrix, another));
   }
 
   static mul(obj, another) {
     let matrix;
+    const mulNumber = (A, m) => mapMtrx(A, (n, i, j) => m * n);
     if (typeof obj === 'number' && isMtrxLike(another)) {
       matrix =  mulNumber(another, obj);
     } else if (isMtrxLike(obj) && typeof another === 'number') {
@@ -247,7 +259,8 @@ class Mtrx extends Array{
   }
 
   static div(obj, another) {
-    var matrix;
+    let matrix;
+    const divNumber = (A, m) => mapMtrx(A, (n, i, j) => m / n);
     if (typeof obj === 'number' && isMtrxLike(another)) {
       matrix = divNumber(another, obj);
     } else if (isMtrxLike(obj) && typeof another === 'number') {

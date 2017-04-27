@@ -282,6 +282,6 @@ n.cof(1, 1)
 // -> Mtrx [ [ 1, 3 ], [ 7, 9 ] ]
 
 // a powerful function
-m.mapMtrx((i, j, n) => i + j + n);
+m.mapMtrx((n, i, j) => i + j + n);
 // -> Mtrx [ [ 1, 1, 2 ], [ 1, 3, 3 ], [ 2, 3, 5 ] ]
 ```

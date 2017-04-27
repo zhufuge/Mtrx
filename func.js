@@ -50,10 +50,16 @@ function resetMtrx(matrix, matrixLike) {
   }
 }
 
-function mapMtrx(fn, matrix) {
+function mapMtrx(matrix, fn) {
   return matrix.map((r, rIndex) =>
                     r.map((c, cIndex) =>
-                          fn(rIndex, cIndex, c)));
+                          fn(c, rIndex, cIndex)));
+}
+
+function reduceMtrx(matrix, fn, init=matrix[0][0]) {
+  return matrix.reduce((r_sum, r, rIndex) =>
+                       r.reduce((c_sum, c, cIndex) =>
+                                fn(c_sum, c, rIndex, cIndex), r_sum), init);
 }
 
 const precFloat = (n, f=20) => Number.parseFloat(n.toFixed(f));
@@ -281,7 +287,7 @@ function compan(matrix) {
   if (!isSquare(matrix)) throw Error(matrix + ' is not a Square matrix.');
   if (!isSingular(matrix)) {
     const d = det(matrix);
-    return mapMtrx((i, j, m) => precFloat(m * d), inverse(matrix));
+    return mapMtrx(inverse(matrix), (n, i, j) => precFloat(n * d));
   } else {
     const n = matrix.length;
     return (n > 1)
@@ -300,6 +306,7 @@ module.exports = {
   isDiag,
   resetMtrx,
   mapMtrx,
+  reduceMtrx,
   multiply,
   rowEchelon,
   LUP,
