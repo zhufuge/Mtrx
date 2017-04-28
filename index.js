@@ -9,6 +9,8 @@ const {
   resetMtrx,
   mapMtrx,
   reduceMtrx,
+  everyMtrx,
+  someMtrx,
   multiply,
   rowEchelon,
   LUP,
@@ -29,6 +31,17 @@ createEye = create((i, j) => (i === j) ? 1 : 0);
 const NumbersError = (...number) => number.forEach((n) => {
   if (typeof n !== 'number') TypeError(n + ' is not a number');
 });
+
+const toArray = a => [...a];
+const equalFn = fn => {
+  return function(matrix, another) {
+    if (!Mtrx.isSameShape(matrix, another)) {
+      throw TypeError(matrix + ' \'s shape is no like ' + another);
+    }
+    return fn(matrix, (n, i, j) => n === another[i][j]);
+  };
+};
+
 
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, type) {
@@ -110,9 +123,9 @@ class Mtrx extends Array{
   }
   get rowEchelon() {
     const echelon = rowEchelon(this);
-    var newMatrix = new Mtrx(echelon);
-    newMatrix.changeRows(this.rows - echelon.length);
-    return newMatrix;
+    let fixed = new Mtrx(echelon);
+    fixed.changeRows(this.rows - echelon.length);
+    return fixed;
   }
 
   static isMtrx(obj) {
@@ -132,10 +145,25 @@ class Mtrx extends Array{
   }
 
   of(i, j) {
+    if (j === void 0) {
+      return this[i];
+    }
     return this[i][j];
   }
+  get(i, j) {
+    if (j === void 0) {
+      return this[i];
+    }
+    return this[i][j];
+  }
+  set(i, j, n) {
+    if (typeof n === 'number') {
+      this[i][j] = n;
+    }
+    return n;
+  }
   cof(i, j) {
-    return new Mtrx(cof(this, i, j));
+    return cof(this, i, j);
   }
   changeRows(rows=0, nums=0) {
     const cols = this.cols;
@@ -177,21 +205,66 @@ class Mtrx extends Array{
   }
 
   mapMtrx(fn) {
-    return new Mtrx(mapMtrx(this, fn));
+    return mapMtrx(this, fn);
+  }
+
+  everyMtrx(fn) {
+    return everyMtrx(this, fn);
+  }
+
+  someMtrx(fn) {
+    return someMtrx(this, fn);
   }
 
   reduceMtrx(fn, init) {
     return reduceMtrx(this, fn, init);
   }
 
-  sum() {
-    return reduceMtrx(this, (sum, n, i, j) => sum + n, 0);
+  sum(type) {
+    const _sum = (s, n) => s + n,
+          _rows_sum = r => r.reduce(_sum, 0);
+    switch(type) {
+    case 0:
+      return toArray(this.map(_rows_sum));
+    case 1:
+      return toArray(this.T.map(_rows_sum));
+    default:
+      return reduceMtrx(this, _sum, 0);
+    }
   }
-  min() {
-    return reduceMtrx(this, (min, n, i, j) => (min > n) ? n : min);
+  min(type) {
+    const _min = (m, n) => (m > n) ? n : m,
+          _rows_min = r => r.reduce(_min);
+    switch(type) {
+    case 0:
+      return toArray(this.map(_rows_min));
+    case 1:
+      return toArray(this.T.map(_rows_min));
+    default:
+      return reduceMtrx(this, _min);
+    }
   }
-  max() {
-    return reduceMtrx(this, (max, n, i, j) => (max < n) ? n : max);
+  max(type) {
+    const _max = (m, n) => (m > n) ? m : n,
+          _rows_max = r => r.reduce(_max);
+    switch(type) {
+    case 0:
+      return toArray(this.map(_rows_max));
+    case 1:
+      return toArray(this.T.map(_rows_max));
+    default:
+      return reduceMtrx(this, _max);
+    }
+  }
+
+  static equal(matrix, another) {
+    return toArray(equalFn(mapMtrx)(matrix, another));
+  }
+  static equalAll(matrix, another) {
+    return equalFn(everyMtrx)(matrix, another);
+  }
+  static equalAny(matrix, another) {
+    return equalFn(someMtrx)(matrix, another);
   }
 
   add(matrix) {
@@ -276,11 +349,6 @@ class Mtrx extends Array{
     }
     return new Mtrx(matrix);
   }
-
-  static cof(matrix, i, j) {
-    if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
-    return new Mtrx(cof(matrix, i, j));
-  };
 
   toString() {
     let matrix = [...this];

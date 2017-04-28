@@ -56,6 +56,18 @@ function mapMtrx(matrix, fn) {
                           fn(c, rIndex, cIndex)));
 }
 
+function everyMtrx(matrix, fn) {
+  return matrix.every((r, rIndex) =>
+                      r.every((c, cIndex) =>
+                              fn(c, rIndex, cIndex)));
+}
+
+function someMtrx(matrix, fn) {
+  return matrix.some((r, rIndex) =>
+                      r.some((c, cIndex) =>
+                              fn(c, rIndex, cIndex)));
+}
+
 function reduceMtrx(matrix, fn, init=matrix[0][0]) {
   return matrix.reduce((r_sum, r, rIndex) =>
                        r.reduce((c_sum, c, cIndex) =>
@@ -307,6 +319,8 @@ module.exports = {
   resetMtrx,
   mapMtrx,
   reduceMtrx,
+  everyMtrx,
+  someMtrx,
   multiply,
   rowEchelon,
   LUP,
