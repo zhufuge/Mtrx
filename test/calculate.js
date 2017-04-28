@@ -103,5 +103,3 @@ const assert = require('assert');
   assert.deepStrictEqual(r, right, 'Mtrx.mul matrix is fault');
   assert.deepStrictEqual(m, l, 'Mtrx.mul matrix is fault, first has change');
 })();
-
-console.log('calculate.js NO PROBLEM');

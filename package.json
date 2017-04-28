@@ -2,8 +2,14 @@
   "name": "mtrx",
   "version": "0.1.2",
   "description": "A simple Array-like matrix calculation library.",
-  "keywords": ["matrix", "linear algebra"],
+  "keywords": [
+    "matrix",
+    "linear algebra"
+  ],
   "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "files": [
     "index.js",
     "src"
@@ -15,5 +21,8 @@
     "type": "git"
   },
   "author": "zhufuge",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "mocha": "^3.3.0"
+  }
 }

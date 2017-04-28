@@ -85,5 +85,3 @@ const re = new Mtrx([
   [ 0,  0, 1 ]
 ]);
 assert.deepStrictEqual(m.rowEchelon, re, 'get a wrong rowEchelon');
-
-console.log('property.js NO PROBLEM');

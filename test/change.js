@@ -65,5 +65,3 @@ m.resetLike(p);
 const mp = new Mtrx(p);
 
 assert.deepStrictEqual(m, mp, 'resetLike is fault');
-
-console.log('change.js NO PROBLEM');

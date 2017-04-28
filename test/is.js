@@ -26,6 +26,3 @@ assert.deepStrictEqual(Mtrx.isSameShape(m, f), false, 'isSameShape is fault');
 assert.deepStrictEqual(Mtrx.isDiag(n), true, 'isDiag is fault');
 assert.deepStrictEqual(Mtrx.isDiag(m), false, 'isDiag is fault');
 assert.deepStrictEqual(Mtrx.isDiag(f), false, 'isDiag is fault');
-
-
-console.log('is.js NO PROBLEM');
