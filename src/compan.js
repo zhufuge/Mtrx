@@ -1,0 +1,24 @@
+const create = require('./create'),
+      clone = require('./clone'),
+      cof = require('./cof'),
+      det = require('./det'),
+      map = require('./map'),
+      inverse = require('./inverse'),
+      isSquare = require('./isSquare'),
+      isSingular = require('./isSingular'),
+      {preciseFloat} = require('./precise');
+
+function compan(matrix) {
+  if (!isSquare(matrix)) throw Error(matrix + ' is not a Square matrix.');
+  if (!isSingular(matrix)) {
+    const d = det(matrix);
+    return map(inverse(matrix), (n, i, j) => preciseFloat(n * d));
+  } else {
+    const n = matrix.length;
+    return (n > 1)
+      ? create((i, j) => det(cof(matrix, i, j)))(n)
+      : clone(matrix);
+  }
+}
+
+module.exports = compan;

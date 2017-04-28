@@ -6,7 +6,7 @@
   "main": "index.js",
   "files": [
     "index.js",
-    "func.js"
+    "src"
   ],
   "homepage": "https://github.com/zhufuge/Mtrx.js",
   "bugs": "https://github.com/zhufuge/Mtrx.js/issues",
