@@ -1,7 +1,6 @@
 const clone = require('./clone'),
       isNumbers = require('./isNumbers'),
       gcd = require('./gcd'),
-      {preciseFloat, preciseSub} = require('./precise'),
       {abs} = Math;
 
 const arrayGcd = (...row) => row.reduce((g, v) =>  gcd(g, v), 0);
@@ -23,7 +22,7 @@ function reduceRow(row) {
   }
 };
 
-const lcm = (a, b) => preciseFloat(a * b /  gcd(a, b));
+const lcm = (a, b) => a * b /  gcd(a, b);
 
 function rowEchelon(matrix) {
   let A = clone(matrix),
@@ -45,7 +44,7 @@ function rowEchelon(matrix) {
             l = lcm(topRC, iRowC);
         if (iRowC !== 0) {
           for (let j = c; j < cols; j++) {
-            iRow[j] = preciseSub((iRow[j] * l / iRowC), (topR[j] * l / topRC));
+            iRow[j] = (iRow[j] * l / iRowC) - (topR[j] * l / topRC);
           }
         }
         reduceRow(iRow);

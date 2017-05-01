@@ -1,8 +1,7 @@
 const isSquare = require('./isSquare'),
       isSingular = require('./isSingular'),
       isDiag = require('./isDiag'),
-      LUP = require('./LUP'),
-      {preciseFloat} = require('./precise');
+      LUP = require('./lup');
 
 function permutationDet(matrix) {
   const n = matrix.length;
@@ -19,9 +18,9 @@ const diagDet = (diag) =>  diag.reduce((det, r, i) => det * r[i], 1);
 function det(matrix) {
   if (!isSquare(matrix)) return NaN;
   if (isSingular(matrix)) return 0;
-  if (isDiag(matrix)) return preciseFloat(diagDet(matrix), 14);
+  if (isDiag(matrix)) return diagDet(matrix);
   const {L, U, P} = LUP(matrix);
-  return preciseFloat(diagDet(L) * diagDet(U), 14) * permutationDet(P);
+  return diagDet(L) * diagDet(U) * permutationDet(P);
 };
 
 module.exports = det;

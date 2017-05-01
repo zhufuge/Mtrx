@@ -4,8 +4,7 @@ function reduce(matrix, fn, init) {
         rowFn = (i) => (s, v, j) => fn(s, v, i, j);
 
   let sum = hasInit ? init : matrix[0].reduce(rowFn(0));
-      i = hasInit ? 0 : 1;
-  for (;i < rows; i++) {
+  for (let i = hasInit ? 0 : 1;i < rows; i++) {
     sum = matrix[i].reduce(rowFn(i), sum);
   }
 

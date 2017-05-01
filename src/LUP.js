@@ -2,8 +2,7 @@ const create = require('./create'),
       clone = require('./clone'),
       multiply = require('./multiply'),
       range = require('./range'),
-      isSquare = require('./isSquare'),
-      {preciseSub} = require('./precise');
+      isSquare = require('./isSquare');
 
 function permutationArray(matrix) {
   let A = clone(matrix),
@@ -29,7 +28,7 @@ function permutationArray(matrix) {
     for (let i = k + 1; i < n; i++) {
       A[i][k] = A[i][k] / A[k][k];
       for (let j = k + 1; j < n; j++) {
-        A[i][j] = preciseSub(A[i][j], A[i][k] * A[k][j]);
+        A[i][j] = A[i][j] - A[i][k] * A[k][j];
       }
     }
   }
@@ -57,7 +56,7 @@ function LUP(matrix) {
 
     for (let i = k + 1; i < n; i++) {
       for (let j = k + 1; j < n; j++) {
-        A[i][j] = preciseSub(A[i][j], L[i][k] * U[k][j]);
+        A[i][j] = A[i][j] - L[i][k] * U[k][j];
       }
     }
   }

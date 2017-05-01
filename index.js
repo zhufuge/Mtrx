@@ -3,34 +3,42 @@ const reduce = require('./src/reduce'),
       some = require('./src/some'),
       map = require('./src/map');
 
-const isNumbers = require('./src/isNumbers'),
-      isMtrxLike = require('./src/isMtrxLike');
+const isDiag = require('./src/isDiag'),
+      isNumbers = require('./src/isNumbers'),
+      isMtrxLike = require('./src/isMtrxLike'),
+      isSingular = require('./src/isSingular'),
+      isSameShape = require('./src/isSameShape');
 
 const rowEchelon = require('./src/rowEchelon'),
+      transpose = require('./src/transpose'),
       multiply = require('./src/multiply'),
       inverse = require('./src/inverse'),
-      equalFn = require('./src/equalFn');
+      equalFn = require('./src/equalFn'),
+      compan = require('./src/compan'),
+      clone = require('./src/clone'),
+      det = require('./src/det'),
+      lup = require('./src/lup'),
+      cof = require('./src/cof');
+const reset = require('./src/reset');
 
-const
-create = require('./src/create'),
-createByNum = (r, c=r, n=0) => create(() => n)(r, c),
-createZeros = (r, c=r) => createByNum(r, c, 0),
-createDiag = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length),
-createByFn = (r, c=r, fn) => create(fn)(r, c),
-createRand = create(() => Math.random()),
-createEye = create((i, j) => (i === j) ? 1 : 0);
+const create = require('./src/create'),
+      createByNum = (r, c=r, n=0) => create(() => n)(r, c),
+      createZeros = (r, c=r) => createByNum(r, c, 0),
+      createDiag = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length),
+      createByFn = (r, c=r, fn) => create(fn)(r, c),
+      createRand = create(() => Math.random()),
+      createEye = create((i, j) => (i === j) ? 1 : 0),
+      toArray = a => [...a];;
 
 const NumbersError = (...number) => number.forEach((n) => {
   if (typeof n !== 'number') TypeError(n + ' is not a number');
 });
 
-const toArray = a => [...a];
-
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, type) {
     let fn;
     if (isMtrxLike(rows)) {
-      fn = require('./src/clone');
+      fn = clone;
     } else if (isNumbers(rows)){
       fn = createDiag;
     } else if (typeof rows === 'number' && typeof cols === 'number') {
@@ -81,13 +89,13 @@ class Mtrx extends Array{
 
   get rows() {    return this.length;  }
   get cols() {    return this[0].length;  }
-  get T() {    return new Mtrx(require('./src/transpose')(this));  }
+  get T() {    return new Mtrx(transpose(this));  }
   get rank() {    return rowEchelon(this).length;  }
   get inv() {    return new Mtrx(inverse(this));  }
-  get det() {    return require('./src/det')(this);  }
-  get compan() {    return new Mtrx(require('./src/compan')(this));  }
+  get det() {    return det(this);  }
+  get compan() {    return new Mtrx(compan(this));  }
   get LUP() {
-    let {L, U, P} = require('./src/LUP')(this);
+    let {L, U, P} = lup(this);
     return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
   }
   get rowEchelon() {
@@ -99,11 +107,9 @@ class Mtrx extends Array{
 
   static isMtrx(obj) {    return obj instanceof Mtrx;  }
   static isMtrxLike(obj) {    return isMtrxLike(obj);  }
-  static isDiag(obj) {    return require('./src/isDiag')(obj);  }
-  static isSingular(matrix) {    return require('./src/isSingular')(matrix);  }
-  static isSameShape(obj, another) {
-    return require('./src/isSameShape')(obj, another);
-  }
+  static isDiag(obj) {    return isDiag(obj);  }
+  static isSingular(matrix) {    return isSingular(matrix);  }
+  static isSameShape(obj, another) {    return isSameShape(obj, another);  }
 
   get(i, j) {
     if (j === void 0) {
@@ -117,7 +123,7 @@ class Mtrx extends Array{
     }
     return n;
   }
-  cof(i, j) {    return require('./src/cof')(this, i, j);  }
+  cof(i, j) {    return cof(this, i, j);  }
   changeRows(rows=0, nums=0) {
     const cols = this.cols;
     if (rows > 0) {
@@ -148,7 +154,6 @@ class Mtrx extends Array{
     }
   }
   resetLike(matrix) {
-    const reset = require('./src/reset');
     if (isMtrxLike(matrix)) {
       reset(this, matrix);
     } else if (isNumbers(matrix)){
