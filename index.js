@@ -1,25 +1,25 @@
 const reduce = require('./src/reduce'),
       every = require('./src/every'),
       some = require('./src/some'),
-      map = require('./src/map');
+      map = require('./src/map'),
 
-const isDiag = require('./src/isDiag'),
+      isDiag = require('./src/isDiag'),
       isNumbers = require('./src/isNumbers'),
       isMtrxLike = require('./src/isMtrxLike'),
       isSingular = require('./src/isSingular'),
-      isSameShape = require('./src/isSameShape');
+      isSameShape = require('./src/isSameShape'),
 
-const rowEchelon = require('./src/rowEchelon'),
       transpose = require('./src/transpose'),
       multiply = require('./src/multiply'),
       inverse = require('./src/inverse'),
-      equalFn = require('./src/equalFn'),
       compan = require('./src/compan'),
       clone = require('./src/clone'),
+      rank = require('./src/rank'),
       det = require('./src/det'),
       lup = require('./src/lup'),
-      cof = require('./src/cof');
-const reset = require('./src/reset');
+      cof = require('./src/cof'),
+
+      reset = require('./src/reset');
 
 const create = require('./src/create'),
       createByNum = (r, c=r, n=0) => create(() => n)(r, c),
@@ -28,11 +28,21 @@ const create = require('./src/create'),
       createByFn = (r, c=r, fn) => create(fn)(r, c),
       createRand = create(() => Math.random()),
       createEye = create((i, j) => (i === j) ? 1 : 0),
-      toArray = a => [...a];;
+      toArray = a => [...a];
 
 const NumbersError = (...number) => number.forEach((n) => {
   if (typeof n !== 'number') TypeError(n + ' is not a number');
 });
+
+const equalFn = fn => {
+  return function(matrix, another) {
+    if (!isSameShape(matrix, another)) {
+      throw TypeError(matrix + ' \'s shape is no like ' + another);
+    }
+    return fn(matrix, (n, i, j) => n === another[i][j]);
+  };
+};
+
 
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, type) {
@@ -89,7 +99,7 @@ class Mtrx extends Array{
 
   get rows() { return this.length; }
   get cols() { return this[0].length; }
-  get rank() { return rowEchelon(this).length; }
+  get rank() { return rank(this); }
   get det() { return det(this); }
 
   get(i, j) {
@@ -111,12 +121,6 @@ class Mtrx extends Array{
   LUP() {
     let {L, U, P} = lup(this);
     return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
-  }
-  rowEchelon() {
-    const echelon = rowEchelon(this);
-    let fixed = new Mtrx(echelon);
-    fixed.changeRows(this.rows - echelon.length);
-    return fixed;
   }
   cof(i, j) { return cof(this, i, j); }
 
@@ -248,9 +252,6 @@ class Mtrx extends Array{
     } else if (isMtrxLike(obj) && typeof another === 'number') {
       matrix = mulNumber(obj, another);
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {
-      if (obj[0].length !== another.length) {
-        throw TypeError(obj + ' can\'t right multiply ' + another);
-      }
       matrix =  multiply(obj, another);
     } else {
       throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
