@@ -87,29 +87,10 @@ class Mtrx extends Array{
     return new this(matrix);
   }
 
-  get rows() {    return this.length;  }
-  get cols() {    return this[0].length;  }
-  get T() {    return new Mtrx(transpose(this));  }
-  get rank() {    return rowEchelon(this).length;  }
-  get inv() {    return new Mtrx(inverse(this));  }
-  get det() {    return det(this);  }
-  get compan() {    return new Mtrx(compan(this));  }
-  get LUP() {
-    let {L, U, P} = lup(this);
-    return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
-  }
-  get rowEchelon() {
-    const echelon = rowEchelon(this);
-    let fixed = new Mtrx(echelon);
-    fixed.changeRows(this.rows - echelon.length);
-    return fixed;
-  }
-
-  static isMtrx(obj) {    return obj instanceof Mtrx;  }
-  static isMtrxLike(obj) {    return isMtrxLike(obj);  }
-  static isDiag(obj) {    return isDiag(obj);  }
-  static isSingular(matrix) {    return isSingular(matrix);  }
-  static isSameShape(obj, another) {    return isSameShape(obj, another);  }
+  get rows() { return this.length; }
+  get cols() { return this[0].length; }
+  get rank() { return rowEchelon(this).length; }
+  get det() { return det(this); }
 
   get(i, j) {
     if (j === void 0) {
@@ -123,7 +104,22 @@ class Mtrx extends Array{
     }
     return n;
   }
-  cof(i, j) {    return cof(this, i, j);  }
+
+  T() { return new Mtrx(transpose(this)); }
+  inv() { return new Mtrx(inverse(this)); }
+  compan() { return new Mtrx(compan(this)); }
+  LUP() {
+    let {L, U, P} = lup(this);
+    return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
+  }
+  rowEchelon() {
+    const echelon = rowEchelon(this);
+    let fixed = new Mtrx(echelon);
+    fixed.changeRows(this.rows - echelon.length);
+    return fixed;
+  }
+  cof(i, j) { return cof(this, i, j); }
+
   changeRows(rows=0, nums=0) {
     const cols = this.cols;
     if (rows > 0) {
@@ -163,10 +159,10 @@ class Mtrx extends Array{
     }
   }
 
-  mapMtrx(fn) {    return map(this, fn);  }
-  everyMtrx(fn) {    return every(this, fn);  }
-  someMtrx(fn) {    return some(this, fn);  }
-  reduceMtrx(fn, init) {    return reduce(this, fn, init);  }
+  mapMtrx(fn) { return map(this, fn); }
+  everyMtrx(fn) { return every(this, fn); }
+  someMtrx(fn) { return some(this, fn); }
+  reduceMtrx(fn, init) { return reduce(this, fn, init); }
 
   sum(type) {
     const _sum = (s, n) => s + n,
@@ -205,24 +201,24 @@ class Mtrx extends Array{
     }
   }
 
-  static equal(matrix, another) {
-    return toArray(equalFn(map)(matrix, another));
-  }
-  static equalAll(matrix, another) {
-    return equalFn(every)(matrix, another);
-  }
-  static equalAny(matrix, another) {
-    return equalFn(some)(matrix, another);
-  }
+  add(matrix) { return Mtrx.add(this, matrix); }
+  sub(matrix) { return Mtrx.sub(this, matrix); }
+  mul(obj) { return Mtrx.mul(this, obj); }
+  rightMul(obj) { return Mtrx.mul(this, obj); }
+  leftMul(obj) { return Mtrx.mul(obj, this); }
+  div(obj) { return Mtrx.div(this, obj); }
+  rightDiv(obj) { return Mtrx.div(this, obj); }
+  leftDiv(obj) { return Mtrx.div(obj, this); }
 
-  add(matrix) {    return Mtrx.add(this, matrix);  }
-  sub(matrix) {    return Mtrx.sub(this, matrix);  }
-  mul(obj) {    return Mtrx.mul(this, obj);  }
-  rightMul(obj) {    return Mtrx.mul(this, obj);  }
-  leftMul(obj) {    return Mtrx.mul(obj, this);  }
-  div(obj) {    return Mtrx.div(this, obj);  }
-  rightDiv(obj) {    return Mtrx.div(this, obj);  }
-  leftDiv(obj) {    return Mtrx.div(obj, this);  }
+  static isMtrx(obj) { return obj instanceof Mtrx; }
+  static isMtrxLike(obj) { return isMtrxLike(obj); }
+  static isDiag(obj) { return isDiag(obj); }
+  static isSingular(matrix) { return isSingular(matrix); }
+  static isSameShape(obj, another) { return isSameShape(obj, another); }
+
+  static equal(matrix, another) { return toArray(equalFn(map)(matrix, another)); }
+  static equalAll(matrix, another) { return equalFn(every)(matrix, another); }
+  static equalAny(matrix, another) { return equalFn(some)(matrix, another); }
 
   static add(matrix, another) {
     if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
