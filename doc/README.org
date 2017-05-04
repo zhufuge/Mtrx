@@ -11,40 +11,41 @@
 
 ** create
    It is really easy to create a matrix object what you want.
-   
-  #+BEGIN_SRC js
-    // No arguments, create a 1¡Á1 random(0 ~ 1) matrix
-    new Mtrx()
-    // -> Mtrx [ [ 0.7173410249746024 ] ]
 
-    // Get a number, create a n¡Án random(0 ~ 1) matrix
-    new Mtrx(2)
-    // -> Mtrx [
-    //  [ 0.9028933497295337, 0.18980748816858917 ],
-    //  [ 0.10859200880292263, 0.560035422729191 ] ]
+   #+BEGIN_SRC js
+     // No arguments, create a 1¡Á1 random(0 ~ 1) matrix
+     new Mtrx()
+     // -> Mtrx [ [ 0.7173410249746024 ] ]
 
-    // Get two numbers, create a n¡Ám random(0 ~ 1) matrix
-    new Mtrx(2, 3)
-    // -> Mtrx [
-    //  [ 0.6974184450003136, 0.6402339494410889, 0.4553998131618524 ],
-    //  [ 0.38759912033793165, 0.8904429716538196, 0.7449091649551736 ] ]
+     // Get a number, create a n¡Án random(0 ~ 1) matrix
+     new Mtrx(2)
+     // -> Mtrx [
+     //  [ 0.9028933497295337, 0.18980748816858917 ],
+     //  [ 0.10859200880292263, 0.560035422729191 ] ]
 
-    // Get three numbers, create a n¡Ám x matrix
-    new Mtrx(3, 4, 9)
-    // -> Mtrx [ [ 9, 9, 9, 9 ], [ 9, 9, 9, 9 ], [ 9, 9, 9, 9 ] ]
-    
-    // Get numbers array, create a diag matrix
-    new Mtrx([2, 4, 6])
-    // -> Mtrx [ [ 2, 0, 0 ], [ 0, 4, 0 ], [ 0, 0, 6 ] ]
+     // Get two numbers, create a n¡Ám random(0 ~ 1) matrix
+     new Mtrx(2, 3)
+     // -> Mtrx [
+     //  [ 0.6974184450003136, 0.6402339494410889, 0.4553998131618524 ],
+     //  [ 0.38759912033793165, 0.8904429716538196, 0.7449091649551736 ] ]
 
-    // Get a 2-order numbers array, create a matrix like the array
-    new Mtrx([[1, 2, 3], [4, 5, 6]])
-    // -> Mtrx [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
+     // Get three numbers, create a n¡Ám x matrix
+     new Mtrx(3, 4, 9)
+     // -> Mtrx [ [ 9, 9, 9, 9 ], [ 9, 9, 9, 9 ], [ 9, 9, 9, 9 ] ]
 
-    // Get two numbers and a function expression, create a matrix by the expression
-    new Mtrx(2, 3, (i, j) => i + j)
-    // -> Mtrx [ [ 0, 1, 2 ], [ 1, 2, 3 ] ]
-  #+END_SRC
+     // Get numbers array, create a diag matrix
+     new Mtrx([2, 4, 6])
+     // -> Mtrx [ [ 2, 0, 0 ], [ 0, 4, 0 ], [ 0, 0, 6 ] ]
+
+     // Get a 2-order numbers array, create a matrix like the array
+     new Mtrx([[1, 2, 3], [4, 5, 6]])
+     // -> Mtrx [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
+
+     // Get two numbers and a function expression, create a matrix by the expression
+     new Mtrx(2, 3, (i, j) => i + j)
+     // -> Mtrx [ [ 0, 1, 2 ], [ 1, 2, 3 ] ]
+   #+END_SRC
+
 ** operation
    Mtrx object is a Array-like object. So, you can operat it just like to operat a 2-order Array.
 

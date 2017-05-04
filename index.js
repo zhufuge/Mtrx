@@ -68,35 +68,6 @@ class Mtrx extends Array{
     super(...fn(rows, cols, type));
   }
 
-  static zeros(rows=1, cols=rows) {
-    NumbersError(rows, cols);
-    return new this(rows, cols, 0);
-  }
-  static ones(rows=1, cols=rows) {
-    NumbersError(rows, cols);
-    return new this(rows, cols, 1);
-  }
-  static eye(rows=1, cols=rows) {
-    NumbersError(rows, cols);
-    return new this(createEye(rows, cols));
-  }
-  static rand(rows=1, cols=rows) {
-    NumbersError(rows, cols);
-    return new this(rows, cols);
-  }
-  static like(matrix) {
-    if (!isMtrxLike(matrix)) throw TypeError(`${matrix} isn't a matrix-like`);
-    return new this(matrix);
-  }
-  static diag(array) {
-    if (!isNumbers(array)) throw TypeError(`${array} isn't a number array`);
-    return new this(array);
-  };
-  static clone(matrix) {
-    if (!this.isMtrx(matrix)) throw TypeError(`${matrix} isn't a Mtrx object`);
-    return new this(matrix);
-  }
-
   get rows() { return this.length; }
   get cols() { return this[0].length; }
   get rank() { return rank(this); }
@@ -114,15 +85,6 @@ class Mtrx extends Array{
     }
     return n;
   }
-
-  T() { return new Mtrx(transpose(this)); }
-  inv() { return new Mtrx(inverse(this)); }
-  compan() { return new Mtrx(compan(this)); }
-  LUP() {
-    let {L, U, P} = lup(this);
-    return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
-  }
-  cof(i, j) { return cof(this, i, j); }
 
   changeRows(rows=0, nums=0) {
     const cols = this.cols;
@@ -163,6 +125,15 @@ class Mtrx extends Array{
     }
   }
 
+  cof(i, j) { return cof(this, i, j); }
+  T() { return new Mtrx(transpose(this)); }
+  compan() { return new Mtrx(compan(this)); }
+  inv() { return new Mtrx(inverse(this)); }
+  LUP() {
+    let {L, U, P} = lup(this);
+    return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};
+  }
+
   mapMtrx(fn) { return map(this, fn); }
   everyMtrx(fn) { return every(this, fn); }
   someMtrx(fn) { return some(this, fn); }
@@ -175,7 +146,7 @@ class Mtrx extends Array{
     case 0:
       return toArray(this.map(_rows_sum));
     case 1:
-      return toArray(this.T.map(_rows_sum));
+      return toArray(this.T().map(_rows_sum));
     default:
       return reduce(this, _sum, 0);
     }
@@ -187,7 +158,7 @@ class Mtrx extends Array{
     case 0:
       return toArray(this.map(_rows_min));
     case 1:
-      return toArray(this.T.map(_rows_min));
+      return toArray(this.T().map(_rows_min));
     default:
       return reduce(this, _min);
     }
@@ -199,7 +170,7 @@ class Mtrx extends Array{
     case 0:
       return toArray(this.map(_rows_max));
     case 1:
-      return toArray(this.T.map(_rows_max));
+      return toArray(this.T().map(_rows_max));
     default:
       return reduce(this, _max);
     }
@@ -214,13 +185,42 @@ class Mtrx extends Array{
   rightDiv(obj) { return Mtrx.div(this, obj); }
   leftDiv(obj) { return Mtrx.div(obj, this); }
 
+  static zeros(rows=1, cols=rows) {
+    NumbersError(rows, cols);
+    return new this(rows, cols, 0);
+  }
+  static ones(rows=1, cols=rows) {
+    NumbersError(rows, cols);
+    return new this(rows, cols, 1);
+  }
+  static eye(rows=1, cols=rows) {
+    NumbersError(rows, cols);
+    return new this(createEye(rows, cols));
+  }
+  static rand(rows=1, cols=rows) {
+    NumbersError(rows, cols);
+    return new this(rows, cols);
+  }
+  static like(matrix) {
+    if (!isMtrxLike(matrix)) throw TypeError(`${matrix} isn't a matrix-like`);
+    return new this(matrix);
+  }
+  static diag(array) {
+    if (!isNumbers(array)) throw TypeError(`${array} isn't a number array`);
+    return new this(array);
+  };
+  static clone(matrix) {
+    if (!this.isMtrx(matrix)) throw TypeError(`${matrix} isn't a Mtrx object`);
+    return new this(matrix);
+  }
+
   static isMtrx(obj) { return obj instanceof Mtrx; }
   static isMtrxLike(obj) { return isMtrxLike(obj); }
   static isDiag(obj) { return isDiag(obj); }
   static isSingular(matrix) { return isSingular(matrix); }
   static isSameShape(obj, another) { return isSameShape(obj, another); }
 
-  static equal(matrix, another) { return toArray(equalFn(map)(matrix, another)); }
+  static equal(matrix, another) { return toArray(equalFn(map)(matrix, another));}
   static equalAll(matrix, another) { return equalFn(every)(matrix, another); }
   static equalAny(matrix, another) { return equalFn(some)(matrix, another); }
 
@@ -233,7 +233,6 @@ class Mtrx extends Array{
     const addition = (A, B) => map(A, (n, i, j) => n + B[i][j]);
     return new Mtrx(addition(matrix, another));
   }
-
   static sub(matrix, another) {
     if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.');
     if (!isMtrxLike(another)) throw TypeError(another + ' is not a MtrxLike.');
@@ -243,7 +242,6 @@ class Mtrx extends Array{
     const subtract = (A, B) => map(A, (n, i, j) => n - B[i][j]);
     return new Mtrx(subtract(matrix, another));
   }
-
   static mul(obj, another) {
     let matrix;
     const mulNumber = (A, m) => map(A, (n, i, j) => m * n);
@@ -259,19 +257,19 @@ class Mtrx extends Array{
     }
     return new Mtrx(matrix);
   }
-
   static div(obj, another) {
     let matrix;
-    const divNumber = (A, m) => map(A, (n, i, j) => m / n);
     if (typeof obj === 'number' && isMtrxLike(another)) {
-      matrix = divNumber(another, obj);
+      const leftDivNumber = (m, A) => map(A, (n, i, j) => m / n);
+      matrix = leftDivNumber(obj, another);
     } else if (isMtrxLike(obj) && typeof another === 'number') {
-      matrix = divNumber(obj, another);
+      const rightDivNumber = (A, m) => map(A, (n, i, j) => n / m);
+      matrix = rightDivNumber(obj, another);
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {
       if (obj[0].length !== another.length || this.isSingular(another)) {
         throw TypeError(obj + ' can\'t right divide ' + another);
       }
-      matrix = multiply(matrix, inverse(another));
+      matrix = multiply(obj, inverse(another));
     } else {
       throw TypeError(obj + ' is not a Number or a MtrxLike, \n Or ' +
                       another + ' is not a Number or a MtrxLike.');
