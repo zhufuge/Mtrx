@@ -2,7 +2,6 @@
 #+AUTHOR: zhufuge
 #+DATE: <2017-04-21 周五 13:25>,<2017-05-04 周四 14:53>
 
-
 Mtrx is a Array-like matrix calculation library.
 
 default class Mtrx is extends Array.

@@ -1,6 +1,6 @@
 {
   "name": "mtrx",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "A simple Array-like matrix calculation library.",
   "keywords": [
     "matrix",
@@ -22,7 +22,7 @@
   },
   "author": "zhufuge",
   "license": "MIT",
-  "dependencies": {
+   "devDependencies": {
     "mocha": "^3.3.0"
   }
 }
