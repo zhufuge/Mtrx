@@ -1,9 +1,3 @@
-/**
- * @fileOverview module entry file, export a class Mtrx.
- * @name index.js
- * @author zhufuge
- * @license MIT
- */
 const reduce = require('./src/reduce'),
       every = require('./src/every'),
       some = require('./src/some'),
@@ -49,21 +43,7 @@ const equalFn = fn => {
   };
 };
 
-/**
- * Class representing a matrix.
- * @extends Array
- */
 class Mtrx extends Array{
-  /**
-   * Create a matrix.
-   * @param {number[][]| number[] | number} [rows=1] - The matrix itself or diag
-   * value or matrix's rows.
-   * @param {number} [cols=rows] - The matrix's cols.
-   * @param {number | function} [type] - The matrix fill number or description
-   * function.
-   * @throws {TypeError} The first param must be a matrix or a number-Array or a
-   * number.
-   */
   constructor(rows=1, cols=rows, type) {
     let fn;
     if (isMtrxLike(rows)) {
@@ -87,46 +67,18 @@ class Mtrx extends Array{
     super(...fn(rows, cols, type));
   }
 
-  /** @property {number} rows - The matrix rows number.   */
   get rows() { return this.length; }
-
-  /** @property {number} cols - The matrix cols number.   */
   get cols() { return this[0].length; }
-
-  /** @property {number} rank - The matrix rank.   */
   get rank() { return rank(this); }
-
-  /** @property {number} det - The matrix det, if no exist, it will return
-   * NaN. */
   get det() { return det(this); }
 
-  /**
-   * get matrix (i, j) item
-   * @param {number} i - The rows index.
-   * @param {number} j - The cols index.
-   * @returns {number} Return (i, j) value.
-   */
-  get(i, j) {
-    return this[i][j];
-  }
-
-  /**
-   * set matrix (i, j) item
-   * @param {number} i - The rows index.
-   * @param {number} j - The cols index.
-   * @param {number} n - The value that you want to replace in matrix.
-   */
+  get(i, j) { return this[i][j]; }
   set(i, j, n) {
     if (typeof n === 'number') {
       this[i][j] = n;
     }
   }
 
-  /**
-   * change matrix rows.
-   * @param {number} [rows=0] - positive is add, negative is remove.
-   * @param {number} [nums=0] - if add, it will fill by this.
-   */
   changeRows(rows=0, nums=0) {
     const cols = this.cols;
     if (rows > 0) {
@@ -141,12 +93,6 @@ class Mtrx extends Array{
       }
     }
   }
-
-  /**
-   * change matrix cols.
-   * @param {number} [rows=0] - positive is add, negative is remove.
-   * @param {number} [nums=0] - if add, it will fill by this.
-   */
   changeCols(cols=0, nums=0) {
     if (cols > 0) {
       for (let i = 0; i < cols; i++) {
@@ -163,11 +109,6 @@ class Mtrx extends Array{
     }
   }
 
-  /**
-   * reset matrix like another.
-   * @param {Mtrx | number[][]} matrix - The matrix what you want to set.
-   * @throws {TypeError} matrix must be a Mtrx or a number Arrays Array.
-   */
   resetLike(matrix) {
     if (isMtrxLike(matrix)) {
       reset(this, matrix);
@@ -178,44 +119,10 @@ class Mtrx extends Array{
     }
   }
 
-  /**
-   * return a matrix without i-row and j-col.
-   * @param {number} i - The index of row that you don't want
-   * @param {number} j - The index of col that you don't want
-   * @returns {Mtrx} Return a matrix without i-row and j-col.
-   */
-  cof(i, j) {
-    return cof(this, i, j);
-  }
-
-  /**
-   * return a matrix that is transpose.
-   * @returns {Mtrx} Return the transpose of matrix.
-   */
-  T() {
-    return new Mtrx(transpose(this));
-  }
-
-  /**
-   * return a matrix that is compan
-   * @returns {Mtrx} Return the compan of matrix.
-   */
-  compan() {
-    return new Mtrx(compan(this));
-  }
-
-  /**
-   * return the inverse of this matrix.
-   * @returns {Mtrx} Return the inverse of this matrix.
-   */
-  inv() {
-    return new Mtrx(inverse(this));
-  }
-
-  /**
-   * return a JS Object that include 3 Mtrxs. that is L, U, P.
-   * @returns {Object} Return {L, U, P}.
-   */
+  cof(i, j) { return cof(this, i, j); }
+  T() { return new Mtrx(transpose(this)); }
+  compan() { return new Mtrx(compan(this)); }
+  inv() { return new Mtrx(inverse(this)); }
   LUP() {
     let {L, U, P} = lup(this);
     return {L: new Mtrx(L), U: new Mtrx(U), P: new Mtrx(P)};

@@ -2,14 +2,16 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org58b86fb">1. Installation</a></li>
-<li><a href="#orgadc5144">2. Usage</a>
+<li><a href="#org8852a24">1. Installation</a></li>
+<li><a href="#org2eba066">2. Properties</a></li>
+<li><a href="#org27214a6">3. Methods</a></li>
+<li><a href="#orgab8dcb9">4. Usage</a>
 <ul>
-<li><a href="#orgf3d22a7">2.1. creation</a></li>
-<li><a href="#org3d30943">2.2. operation</a></li>
-<li><a href="#orge3ce325">2.3. properties</a></li>
-<li><a href="#org2a8f58d">2.4. static function</a></li>
-<li><a href="#orge8f1f6c">2.5. methods</a></li>
+<li><a href="#orgc8c57c5">4.1. creation</a></li>
+<li><a href="#org055dfc0">4.2. operation</a></li>
+<li><a href="#org5b284e6">4.3. properties</a></li>
+<li><a href="#orgcdf98bb">4.4. static function</a></li>
+<li><a href="#org7058174">4.5. methods</a></li>
 </ul>
 </li>
 </ul>
@@ -20,30 +22,76 @@ Mtrx is a Array-like matrix calculation library.
 default class Mtrx is extends Array.
 
 
-<a id="org58b86fb"></a>
+<a id="org8852a24"></a>
 
 # Installation
-
-``` shell
+```sh
     $ npm install mtrx
 ```
 
+<a id="org2eba066"></a>
 
-<a id="orgadc5144"></a>
+# Properties
+
+-   Mtrx.rows
+-   Mtrx.cols
+-   Mtrx.rank
+-   Mtrx.det
+
+
+<a id="org27214a6"></a>
+
+# Methods
+
+-   Mtrx.zeros()
+-   Mtrx.ones()
+-   Mtrx.eye()
+-   Mtrx.rand()
+-   Mtrx.like()
+-   Mtrx.diag()
+-   Mtrx.clone()
+-   Mtrx.isMtrx()
+-   Mtrx.isMtrxLike()
+-   Mtrx.isDiag()
+-   Mtrx.isSingular()
+-   Mtrx.isSameShape()
+-   Mtrx.equal()
+-   Mtrx.equalAll()
+-   Mtrx.equalAny()
+-   Mtrx.prototype.get()
+-   Mtrx.prototype.set()
+-   Mtrx.prototype.changeRows()
+-   Mtrx.prototype.changeCols()
+-   Mtrx.prototype.resetLike()
+-   Mtrx.prototype.cof()
+-   Mtrx.prototype.T()
+-   Mtrx.prototype.compan()
+-   Mtrx.prototype.inv()
+-   Mtrx.prototype.LUP()
+-   Mtrx.prototype.mapMtrx()
+-   Mtrx.prototype.everyMtrx()
+-   Mtrx.prototype.someMtrx()
+-   Mtrx.prototype.reduceMtrx()
+-   Mtrx.prototype.rightMul()
+-   Mtrx.prototype.leftMul()
+-   Mtrx.prototype.rightDiv()
+-   Mtrx.prototype.leftDiv()
+
+
+<a id="orgab8dcb9"></a>
 
 # Usage
-
-``` javascript
+```js
     const Mtrx = require('mtrx');
 ```
 
-<a id="orgf3d22a7"></a>
+<a id="orgc8c57c5"></a>
 
 ## creation
 
 It is really easy to create a matrix object what you want.
-``` javascript
-    // No arguments, create a 1¡Á1 random(0 ~ 1) matrix
+```js
+    // No arguments, create a 1x1 random(0 ~ 1) matrix
     new Mtrx()
     // -> Mtrx [ [ 0.7173410249746024 ] ]
     
@@ -73,12 +121,12 @@ It is really easy to create a matrix object what you want.
     // -> Mtrx [ [ 0, 1, 2 ], [ 1, 2, 3 ] ]
 ```
 
-<a id="org3d30943"></a>
+<a id="org055dfc0"></a>
 
 ## operation
 
 Mtrx object is a Array-like object. So, you can operat it just like to operat a 2-order Array.
-``` javascript
+```js
     const m = new Mtrx(2, 3, 0)
     // -> Mtrx [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
     
@@ -89,10 +137,10 @@ Mtrx object is a Array-like object. So, you can operat it just like to operat a 
     // -> Mtrx [ [ 0, 1, 0 ], [ 0, 0, 0 ] ]
 ```
 
-<a id="orge3ce325"></a>
+<a id="org5b284e6"></a>
 
 ## properties
-``` javascript
+```js
     const m = new Mtrx(2, 3, (i, j) => (i === j) ? 1 : 0)
     // -> Mtrx [ [ 1, 0, 0 ], [ 0, 1, 0 ] ]
     const n = new Mtrx([
@@ -114,12 +162,12 @@ Mtrx object is a Array-like object. So, you can operat it just like to operat a 
     m.rank  // -> 1
 ```
 
-<a id="org2a8f58d"></a>
+<a id="orgcdf98bb"></a>
 
 ## static function
 
 all the static functions is Immutable.
-``` javascript
+```js
     Mtrx.zeros(3, 3)
     // -> Mtrx [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
     
@@ -159,12 +207,12 @@ all the static functions is Immutable.
     // -> Mtrx [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ]
 ```
 
-<a id="orge8f1f6c"></a>
+<a id="org7058174"></a>
 
 ## methods
 
 Following functions will always return a new Mtrx object.
-``` javascript
+```js
     const m = new Mtrx([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     const n = new Mtrx([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     
@@ -205,4 +253,4 @@ Following functions will always return a new Mtrx object.
     m.inv()
     m.compan()
     // -> Error: ...
-``` 
+```

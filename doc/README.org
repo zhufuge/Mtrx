@@ -12,15 +12,56 @@ default class Mtrx is extends Array.
     $ npm install mtrx
   #+END_SRC
 
+* Properties
+  - Mtrx.rows
+  - Mtrx.cols
+  - Mtrx.rank
+  - Mtrx.det
+
+* Methods
+   - Mtrx.zeros()
+   - Mtrx.ones()
+   - Mtrx.eye()
+   - Mtrx.rand()
+   - Mtrx.like()
+   - Mtrx.diag()
+   - Mtrx.clone()
+   - Mtrx.isMtrx()
+   - Mtrx.isMtrxLike()
+   - Mtrx.isDiag()
+   - Mtrx.isSingular()
+   - Mtrx.isSameShape()
+   - Mtrx.equal()
+   - Mtrx.equalAll()
+   - Mtrx.equalAny()
+   - Mtrx.prototype.get()
+   - Mtrx.prototype.set()
+   - Mtrx.prototype.changeRows()
+   - Mtrx.prototype.changeCols()
+   - Mtrx.prototype.resetLike()
+   - Mtrx.prototype.cof()
+   - Mtrx.prototype.T()
+   - Mtrx.prototype.compan()
+   - Mtrx.prototype.inv()
+   - Mtrx.prototype.LUP()
+   - Mtrx.prototype.mapMtrx()
+   - Mtrx.prototype.everyMtrx()
+   - Mtrx.prototype.someMtrx()
+   - Mtrx.prototype.reduceMtrx()
+   - Mtrx.prototype.rightMul()
+   - Mtrx.prototype.leftMul()
+   - Mtrx.prototype.rightDiv()
+   - Mtrx.prototype.leftDiv()
+
 * Usage
   #+BEGIN_SRC js
-    const Mtrx = require('mtrx');
+  const Mtrx = require('mtrx');
   #+END_SRC
 ** creation
    It is really easy to create a matrix object what you want.
    
    #+BEGIN_SRC js
-     // No arguments, create a 1¡Á1 random(0 ~ 1) matrix
+     // No arguments, create a 1x1 random(0 ~ 1) matrix
      new Mtrx()
      // -> Mtrx [ [ 0.7173410249746024 ] ]
 
