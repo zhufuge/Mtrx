@@ -14,10 +14,10 @@
     "index.js",
     "src"
   ],
-  "homepage": "https://github.com/zhufuge/Mtrx.js",
-  "bugs": "https://github.com/zhufuge/Mtrx.js/issues",
+  "homepage": "https://github.com/zhufuge/Mtrx",
+  "bugs": "https://github.com/zhufuge/Mtrx/issues",
   "repository": {
-    "url": "https://github.com/zhufuge/Mtrx.js",
+    "url": "https://github.com/zhufuge/Mtrx",
     "type": "git"
   },
   "author": "zhufuge",

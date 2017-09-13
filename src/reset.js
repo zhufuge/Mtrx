@@ -1,13 +1,13 @@
 function reset(matrix, matrixLike) {
-  const rows = matrix.length;
+  const rows = matrix.length
   for (let i = rows; i > 0; i--) {
-    matrix.pop();
+    matrix.pop()
   }
 
-  const newRows = matrixLike.length;
+  const newRows = matrixLike.length
   for (let i = 0; i < newRows; i++) {
-    matrix.push(matrixLike[i]);
+    matrix.push(matrixLike[i])
   }
 }
 
-module.exports = reset;
+module.exports = reset

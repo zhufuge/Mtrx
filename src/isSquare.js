@@ -1,5 +1,5 @@
 function isSquare(matrix) {
-  return matrix.length === matrix[0].length;
+  return matrix.length === matrix[0].length
 }
 
-module.exports = isSquare;
+module.exports = isSquare
