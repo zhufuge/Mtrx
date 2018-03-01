@@ -1,4 +1,4 @@
-const { map } = require('./iteration')
+const { map } = require('./collection')
 const create = require('./create')
 const clone = require('./clone')
 const cof = require('./cof')

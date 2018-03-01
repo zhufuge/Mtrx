@@ -1,7 +1,7 @@
-const { reduce, every, some, map } = require('./iteration')
+const { reduce, every, some, map } = require('./collection')
 
 const isDiag = require('./isDiag')
-const isNumbers = require('./isNumbers')
+const isNumberArray = require('./isNumberArray')
 const isMtrxLike = require('./isMtrxLike')
 const isSingular = require('./isSingular')
 const isSameShape = require('./isSameShape')
@@ -45,7 +45,7 @@ class Mtrx extends Array{
     let fn
     if (isMtrxLike(rows)) {
       fn = clone
-    } else if (isNumbers(rows)){
+    } else if (isNumberArray(rows)){
       fn = createDiag
     } else if (typeof rows === 'number' && typeof cols === 'number') {
       if (type === void 0) {
@@ -109,7 +109,7 @@ class Mtrx extends Array{
   resetLike(matrix) {
     if (isMtrxLike(matrix)) {
       reset(this, matrix)
-    } else if (isNumbers(matrix)){
+    } else if (isNumberArray(matrix)){
       reset(this, create((i, j) => (i === j) ? matrix[i] : 0)(matrix.length))
     }  else {
       throw TypeError(matrix + ' is not a Matrix or Number-Arrays-Array.')
@@ -197,7 +197,7 @@ class Mtrx extends Array{
     return new this(matrix)
   }
   static diag(array) {
-    if (!isNumbers(array)) throw TypeError(`${array} isn't a number array`)
+    if (!isNumberArray(array)) throw TypeError(`${array} isn't a number array`)
     return new this(array)
   }
   static clone(matrix) {

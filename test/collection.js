@@ -1,4 +1,4 @@
-const { reduce, every, some, map } = require('../src/iteration');
+const { reduce, every, some, map } = require('../src/collection');
 const assert = require('assert');
 
 
