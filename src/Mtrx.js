@@ -1,4 +1,5 @@
 const { reduce, every, some, map } = require('./collection')
+const { isNumber, toArray } = require('./lang')
 
 const isDiag = require('./isDiag')
 const isNumberArray = require('./isNumberArray')
@@ -6,30 +7,17 @@ const isMtrxLike = require('./isMtrxLike')
 const isSingular = require('./isSingular')
 const isSameShape = require('./isSameShape')
 
+const create = require('./create')
+const clone = require('./clone')
 const transpose = require('./transpose')
 const multiply = require('./multiply')
 const inverse = require('./inverse')
 const compan = require('./compan')
-const clone = require('./clone')
 const rank = require('./rank')
 const det = require('./det')
 const lup = require('./lup')
 const cof = require('./cof')
-
 const reset = require('./reset')
-
-const create = require('./create')
-const createByNum = (r, c=r, n=0) => create(() => n)(r, c)
-const createZeros = (r, c=r) => createByNum(r, c, 0)
-const createDiag = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length)
-const createByFn = (r, c=r, fn) => create(fn)(r, c)
-const createRand = create(() => Math.random())
-const createEye = create((i, j) => (i === j) ? 1 : 0)
-const toArray = a => [...a]
-
-const NumbersError = (...number) => number.forEach((n) => {
-  if (typeof n !== 'number') TypeError(n + ' is not a number')
-})
 
 const equalFn = fn => {
   return function(matrix, another) {
@@ -46,19 +34,19 @@ class Mtrx extends Array{
     if (isMtrxLike(rows)) {
       fn = clone
     } else if (isNumberArray(rows)){
-      fn = createDiag
-    } else if (typeof rows === 'number' && typeof cols === 'number') {
-      if (type === void 0) {
-        fn = createRand
-      } else if (typeof type === 'number') {
-        fn = createByNum
+      fn = (a) => create((i, j) => (i === j) ? a[i] : 0)(a.length)
+    } else if (isNumber(rows) && isNumber(cols)) {
+      if (type == null) {
+        fn = create(() => Math.random())
+      } else if (isNumber(type)) {
+        fn = (r, c=r, n=0) => create(() => n)(r, c)
       } else if (typeof type === 'function'){
-        fn = createByFn
+        fn = (r, c=r, fn) => create(fn)(r, c)
       } else {
-        fn = createZeros
+        fn = (r, c=r) => create(() => 0)(r, c)
       }
     } else {
-      throw TypeError(rows + ' is not a Matrix or Number Array or Number.')
+      throw TypeError(rows + ' is not a Matrix or Number-Array or Number.')
     }
 
     super(...fn(rows, cols, type))
@@ -71,7 +59,7 @@ class Mtrx extends Array{
 
   get(i, j) { return this[i][j] }
   set(i, j, n) {
-    if (typeof n === 'number') {
+    if (isNumber(n)) {
       this[i][j] = n
     }
   }
@@ -177,19 +165,15 @@ class Mtrx extends Array{
   leftDiv(obj) { return Mtrx.div(obj, this) }
 
   static zeros(rows=1, cols=rows) {
-    NumbersError(rows, cols)
     return new this(rows, cols, 0)
   }
   static ones(rows=1, cols=rows) {
-    NumbersError(rows, cols)
     return new this(rows, cols, 1)
   }
   static eye(rows=1, cols=rows) {
-    NumbersError(rows, cols)
-    return new this(createEye(rows, cols))
+    return new this(create((i, j) => (i === j) ? 1 : 0)(rows, cols))
   }
   static rand(rows=1, cols=rows) {
-    NumbersError(rows, cols)
     return new this(rows, cols)
   }
   static like(matrix) {
@@ -236,9 +220,9 @@ class Mtrx extends Array{
   static mul(obj, another) {
     let matrix
     const mulNumber = (A, m) => map(A, (n) => m * n)
-    if (typeof obj === 'number' && isMtrxLike(another)) {
+    if (isNumber(obj) && isMtrxLike(another)) {
       matrix =  mulNumber(another, obj)
-    } else if (isMtrxLike(obj) && typeof another === 'number') {
+    } else if (isMtrxLike(obj) && isNumber(another)) {
       matrix = mulNumber(obj, another)
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {
       matrix =  multiply(obj, another)
@@ -250,10 +234,10 @@ class Mtrx extends Array{
   }
   static div(obj, another) {
     let matrix
-    if (typeof obj === 'number' && isMtrxLike(another)) {
+    if (isNumber(obj) && isMtrxLike(another)) {
       const leftDivNumber = (m, A) => map(A, (n) => m / n)
       matrix = leftDivNumber(obj, another)
-    } else if (isMtrxLike(obj) && typeof another === 'number') {
+    } else if (isMtrxLike(obj) && isNumber(another)) {
       const rightDivNumber = (A, m) => map(A, (n) => n / m)
       matrix = rightDivNumber(obj, another)
     } else if (isMtrxLike(obj) && isMtrxLike(another)) {

@@ -11,4 +11,11 @@ function create(fn) {
   }
 }
 
+// const fill = (r, c=r, n=0) => create(() => n)(r, c)
+// const diag = (array) => create((i, j) => (i === j ? array[i] : 0))(array.length)
+
+// create.fill = fill
+// create.diag = diag
+// create.zeros = (r, c=r) => fill(r, c, 0)
+
 module.exports = create
