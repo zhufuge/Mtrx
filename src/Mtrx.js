@@ -6,6 +6,7 @@ const isNumberArray = require('./isNumberArray')
 const isMtrxLike = require('./isMtrxLike')
 const isSingular = require('./isSingular')
 const isSameShape = require('./isSameShape')
+const isEqualWith = require('./isEqualWith')
 
 const create = require('./create')
 const clone = require('./clone')
@@ -18,15 +19,6 @@ const det = require('./det')
 const lup = require('./lup')
 const cof = require('./cof')
 const reset = require('./reset')
-
-const equalFn = fn => {
-  return function(matrix, another) {
-    if (!isSameShape(matrix, another)) {
-      throw TypeError(matrix + ' \'s shape is no like ' + another)
-    }
-    return fn(matrix, (n, i, j) => n === another[i][j])
-  }
-}
 
 class Mtrx extends Array{
   constructor(rows=1, cols=rows, type) {
@@ -195,9 +187,9 @@ class Mtrx extends Array{
   static isSingular(matrix) { return isSingular(matrix) }
   static isSameShape(obj, another) { return isSameShape(obj, another) }
 
-  static equal(matrix, another) { return toArray(equalFn(map)(matrix, another))}
-  static equalAll(matrix, another) { return equalFn(every)(matrix, another) }
-  static equalAny(matrix, another) { return equalFn(some)(matrix, another) }
+  static equal(matrix, another) { return toArray(isEqualWith(matrix, another, map)) }
+  static equalAll(matrix, another) { return isEqualWith(matrix, another, every) }
+  static equalAny(matrix, another) { return isEqualWith(matrix, another, some) }
 
   static add(matrix, another) {
     if (!isMtrxLike(matrix)) throw TypeError(matrix + ' is not a MtrxLike.')

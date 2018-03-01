@@ -1,6 +1,6 @@
 {
   "name": "mtrx",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A simple Array-like matrix calculation library.",
   "keywords": [
     "matrix",
