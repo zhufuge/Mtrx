@@ -1,6 +1,6 @@
-const isSquare = require('./isSquare'),
-      transpose = require('./transpose'),
-      rank = require('./rank')
+const isSquare = require('./isSquare')
+const transpose = require('./transpose')
+const rank = require('./rank')
 
 const isZeros = (array) => array.every(n => n === 0)
 const hasZeroRow = (matrix) =>  matrix.some(row => isZeros(row))

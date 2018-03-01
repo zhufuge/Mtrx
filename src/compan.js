@@ -1,11 +1,11 @@
-const create = require('./create'),
-      clone = require('./clone'),
-      cof = require('./cof'),
-      det = require('./det'),
-      map = require('./map'),
-      inverse = require('./inverse'),
-      isSquare = require('./isSquare'),
-      isSingular = require('./isSingular')
+const { map } = require('./iteration')
+const create = require('./create')
+const clone = require('./clone')
+const cof = require('./cof')
+const det = require('./det')
+const inverse = require('./inverse')
+const isSquare = require('./isSquare')
+const isSingular = require('./isSingular')
 
 function compan(matrix) {
   if (!isSquare(matrix)) throw Error(matrix + ' is not a Square matrix.')

@@ -1,6 +1,6 @@
-const isMtrxLike = require('./isMtrxLike'),
-      isSquare = require('./isSquare'),
-      every = require('./every')
+const isMtrxLike = require('./isMtrxLike')
+const isSquare = require('./isSquare')
+const { every } = require('./iteration')
 
 function isDiag(matrix) {
   return isMtrxLike(matrix) &&
