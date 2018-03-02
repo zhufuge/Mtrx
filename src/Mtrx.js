@@ -1,8 +1,7 @@
 const { reduce, every, some, map } = require('./collection')
-const { isNumber, toArray } = require('./lang')
+const { isNumber, isNumberArray, toArray } = require('./lang')
 
 const isDiag = require('./isDiag')
-const isNumberArray = require('./isNumberArray')
 const isMtrxLike = require('./isMtrxLike')
 const isSingular = require('./isSingular')
 const isSameShape = require('./isSameShape')
@@ -57,12 +56,10 @@ class Mtrx extends Array{
   }
 
   changeRows(rows=0, nums=0) {
-    const cols = this.cols
     if (rows > 0) {
-      let r
+      const cols = this.cols
       for (let i = 0; i < rows; i++) {
-        r = Array(cols).fill(nums)
-        this.push(r)
+        this.push(Array(cols).fill(nums))
       }
     } else {
       for (let i = rows; i < 0; i++) {
@@ -111,15 +108,15 @@ class Mtrx extends Array{
   reduceMtrx(fn, init) { return reduce(this, fn, init) }
 
   sum(type) {
-    const _sum = (s, n) => s + n,
-          _rows_sum = r => r.reduce(_sum, 0)
+    const add = (a, b) => a + b
+    const _sum = r => r.reduce(add, 0)
     switch(type) {
     case 0:
-      return toArray(this.map(_rows_sum))
+      return toArray(this.map(_sum))
     case 1:
-      return toArray(this.T().map(_rows_sum))
+      return toArray(this.T().map(_sum))
     default:
-      return reduce(this, _sum, 0)
+      return reduce(this, add, 0)
     }
   }
   min(type) {

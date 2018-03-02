@@ -1,4 +1,4 @@
-const isNumberArray = require('../src/isNumberArray');
+const { isNumberArray } = require('../src/lang');
 const assert = require('assert');
 
 

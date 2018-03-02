@@ -1,4 +1,4 @@
-const isNumberArray = require('./isNumberArray')
+const { isNumberArray } = require('./lang')
 
 function isMtrxLike(obj)  {
   return Array.isArray(obj) &&
